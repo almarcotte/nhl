@@ -1,0 +1,19 @@
+{
+  "name": "gnumast/nhl",
+  "description": "Parse and store NHL data from NHL.com game files",
+  "authors": [
+    {
+      "name": "Alex Marcotte",
+      "email": "alex.marcotte@gmail.com"
+    }
+  ],
+  "require": {
+    "league/climate": "^3.2",
+    "phpunit/phpunit": "^5.1"
+  },
+  "autoload": {
+    "psr-4": {
+      "NHL\\": "src/"
+    }
+  }
+}
