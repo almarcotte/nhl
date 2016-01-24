@@ -9,7 +9,8 @@
   ],
   "require": {
     "league/climate": "^3.2",
-    "phpunit/phpunit": "^5.1"
+    "phpunit/phpunit": "^5.1",
+    "querypath/QueryPath": "^3.0"
   },
   "autoload": {
     "psr-4": {
