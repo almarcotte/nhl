@@ -3,6 +3,7 @@
 namespace NHL;
 
 use League\CLImate\CLImate;
+use NHL\Events\Shot;
 use NHL\Events\Types;
 use NHL\Exceptions\NHLParserException;
 use PHPHtmlParser\Dom;
@@ -154,16 +155,17 @@ class Parser
             return false;
         }
 
-        if ($line[4] == 'MISS') {
-            $this->climate->out("MISS EVENT");
-            /** @var Event $event */
+        if ($line[4] == 'SHOT' || $line[4] == 'MISS') {
+            /** @var Shot $event */
             $event = Types::makeTypeFromString($line[4]);
-            $event->setEventNumber($line[0]);
-            $event->setPeriod($line[1]);
-            $event->setTime($line[3]);
-            $event->parseLine($line[5]);
-            $this->climate->out($event->describe());
         }
+
+        $event->setEventNumber($line[0]);
+        $event->setPeriod($line[1]);
+        $event->setTime($line[3]);
+
+        $event->parseLine($line[5]);
+        $this->climate->out($event->describe());
     }
 
 }

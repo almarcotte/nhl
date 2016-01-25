@@ -30,7 +30,7 @@ class Types
             case 'HIT':
                 return self::HIT;
             case 'SHOT':
-                return self::SHOT;
+                return new Shot();
             case 'BLOCK':
                 return self::BLOCK;
             case 'MISS':

@@ -9,7 +9,11 @@ use NHL\Event;
 class Miss extends Event
 {
     protected $shotTypes = [
-        'Wrist'
+        'Wrist',
+        'Snap',
+        'Backhand',
+        'Tip-In',
+        'Slap'
     ];
 
     /** @var Team $team */
