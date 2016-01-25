@@ -3,7 +3,14 @@
 namespace NHL;
 
 use League\CLImate\CLImate;
+use NHL\Events\Types;
 use NHL\Exceptions\NHLParserException;
+use PHPHtmlParser\Dom;
+use PHPHtmlParser\Dom\AbstractNode;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
+use RecursiveRegexIterator;
+use RegexIterator;
 
 /**
  * Class Parser
@@ -46,13 +53,13 @@ class Parser
     }
 
     /**
-     * Parses files
+     * Makes sure we have files to parse. If not only parsing, initiate the download
      *
-     * @return bool
      * @throws NHLParserException
      */
-    public function parse()
+    private function prepareFiles()
     {
+        // Not downloading, make sure files exist to parse
         if (is_null($this->downloader)) {
             // Try and parse existing files, no additional downloads
             if (!$this->climate->arguments->defined('files')) {
@@ -61,8 +68,102 @@ class Parser
             if (!is_dir($this->climate->arguments->get('files'))) {
                 throw new NHLParserException("The path provided for files isn't a directory.\n");
             }
+        } else {
+            $this->downloader->download();
         }
+    }
+
+    /**
+     * Parses files
+     *
+     * @return bool
+     * @throws NHLParserException
+     */
+    public function parse()
+    {
+        $this->prepareFiles();
+        $files = $this->getAllFileNames();
+
+        foreach($files as $filename) {
+            $this->climate->out("Processing " . $filename);
+            $this->processFile($filename);
+        }
+
         return true;
+    }
+
+    /**
+     * Gets all file names in the data file directory
+     *
+     * @return array
+     */
+    private function getAllFileNames()
+    {
+
+        $directory = new RecursiveDirectoryIterator(
+            $this->climate->arguments->get('files')
+        );
+        $iterator = new RecursiveIteratorIterator($directory);
+        $regex = new RegexIterator($iterator, '/^.+\.HTM$/i', RecursiveRegexIterator::GET_MATCH);
+
+        $files = array_keys(iterator_to_array($regex));
+
+        usort($files, function ($a, $b) {
+            return strcmp($a, $b);
+        });
+
+        return $files;
+    }
+
+    /**
+     * @param $filename
+     */
+    private function processFile($filename)
+    {
+        $dom = new Dom();
+        $dom->loadFromFile($filename);
+        $lines = [];
+
+        /** @var AbstractNode $tr */
+        foreach($dom->find('tr.evenColor') as $tr) {
+            $lineContent = [];
+            $lineCount = 0;
+            /** @var AbstractNode $td */
+            foreach($tr->getChildren() as $td) {
+                $value = trim($td->text); // clean up the line
+                if ($value) {
+                    $lineCount++;
+                    // Each event is actually 6 lines
+                    $lineContent[] = $value;
+                    if ($lineCount % 6 == 0) {
+                        $lines[] = $lineContent;
+                        $lineContent = [];
+                    }
+                }
+            }
+        }
+
+        foreach($lines as $line) {
+            $this->createParsedEvent($line);
+        }
+    }
+
+    private function createParsedEvent($line)
+    {
+        if (count($line) != 6) {
+            return false;
+        }
+
+        if ($line[4] == 'MISS') {
+            $this->climate->out("MISS EVENT");
+            /** @var Event $event */
+            $event = Types::makeTypeFromString($line[4]);
+            $event->setEventNumber($line[0]);
+            $event->setPeriod($line[1]);
+            $event->setTime($line[3]);
+            $event->parseLine($line[5]);
+            $this->climate->out($event->describe());
+        }
     }
 
 }

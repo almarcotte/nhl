@@ -26,6 +26,10 @@ class Downloader
     const SOURCE_FORMAT = "%s%s%04d.HTM";
     const SOURCE_BASE = "http://www.nhl.com/scores/htmlreports/%s/";
 
+    /** sleep for 10 seconds every 10 files */
+    const SLEEP_TIME = 10;
+    const SLEEP_EVERY = 10;
+
     /** @var array $options */
     protected $options = [
         'season' => '20152016',
@@ -37,6 +41,9 @@ class Downloader
 
     /** @var CLImate $climate */
     protected $climate;
+
+    /** @var int $downloaded */
+    private $downloaded;
 
     /**
      * Downloader constructor.
@@ -87,6 +94,7 @@ class Downloader
 
         $season_folder = $this->initSeasonFolder();
 
+        $this->downloaded = 0;
         foreach(range(1, 100) as $game_number) {
             $file_name = sprintf(self::SOURCE_FORMAT, 'PL', $this->options['subseason'], $game_number);
             $file_local = $season_folder.DIRECTORY_SEPARATOR.$file_name;
@@ -95,12 +103,13 @@ class Downloader
             $this->out("Downloading from " . $file_remote . " to " . $file_local);
             $this->fetchAndSaveFile($file_remote, $file_local);
 
-            if (!$this->climate->arguments->defined('quick') && ($game_number % 5 == 0)) {
-                $this->out("Sleeping for 10 seconds...");
-                sleep(10);
+            if (!$this->climate->arguments->defined('quick') && ($this->downloaded % self::SLEEP_EVERY == 0)) {
+                $this->out("Sleeping for " . self::SLEEP_TIME . " seconds...");
+                sleep(self::SLEEP_TIME);
                 $this->out("Resuming...");
             }
         }
+        $this->out("Downloaded {$this->downloaded} files after trying {$game_number}");
     }
 
     private function initSeasonFolder()
@@ -125,18 +134,9 @@ class Downloader
             $this->out("Skipped because it already exists");
             return;
         }
+        $this->downloaded++;
 
-        $file = fopen($url, 'rb');
-        if ($file) {
-            $new = fopen($output, 'wb');
-            if ($new) {
-                while (!feof($file)) {
-                    fwrite($new, fread($file, 1024 * 8), 1024 * 8);
-                }
-                fclose($new);
-            }
-            fclose($file);
-        }
+       file_put_contents($output, fopen($url, 'r'));
     }
 
     /**
