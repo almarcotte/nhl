@@ -18,6 +18,8 @@ class Miss extends Event
 
     const REGEX = "/([[:upper:]]+) #(\\d+) ([A-Z ]+), (\\w+), ([A-Za-z\\. ]+), ([A-Za-z\\. ]+), (\\d+ ft.)/i";
 
+    const DESCRIBE = "[P%s: %s] Missed %s shot by #%s %s (%s) from %s (%s)";
+
     /**
      * @return int
      */
@@ -31,11 +33,15 @@ class Miss extends Event
      * First 3 characters are the team, followed by #NUM and player's last name
      * Next: type of shot, type of miss, location, distance
      *
-     * @return mixed|void
+     * @return bool
      */
     public function parse()
     {
         $data = $this->toArray();
+        if (empty($data)) {
+            $this->parsed = false;
+            return false;
+        }
 
         $this->type = $data['type'];
         $this->location = $data['location'];
@@ -43,20 +49,26 @@ class Miss extends Event
         $this->target = $data['target'];
         $this->team = new Team($data['team']);
         $this->player = new Player($data['number'], $data['player'], $this->team);
+
+        $this->parsed = true;
+        return true;
     }
 
     public function toArray()
     {
-        preg_match_all(self::REGEX, $this->line, $matches);
-        return [
-            'team' => $matches[1][0],
-            'number' => $matches[2][0],
-            'player' => $matches[3][0],
-            'type' => $matches[4][0],
-            'target' => $matches[5][0],
-            'location' => $matches[6][0],
-            'distance' => $matches[7][0]
-        ];
+        if (preg_match_all(self::REGEX, $this->line, $matches)) {
+            return [
+                'team' => $matches[1][0],
+                'number' => $matches[2][0],
+                'player' => $matches[3][0],
+                'type' => $matches[4][0],
+                'target' => $matches[5][0],
+                'location' => $matches[6][0],
+                'distance' => $matches[7][0]
+            ];
+        }
+
+        return [];
     }
 
     /**
@@ -64,9 +76,18 @@ class Miss extends Event
      */
     public function describe()
     {
-        return "[P" .$this->period. ": " . $this->time . "]" // Period and time
-            . $this->team->getName() . " " . $this->player->getName() . " (". $this->player->getNumber() . ")"
-            . " missed a " . $this->shotType . " shot from "
-            . $this->distance . " in " . $this->location;
+        if ($this->parsed) {
+            return sprintf(
+                self::DESCRIBE,
+                $this->period,
+                $this->time,
+                $this->type,
+                $this->player->number,
+                $this->player->name,
+                $this->team->name,
+                $this->distance,
+                $this->location
+            );
+        }
     }
 }

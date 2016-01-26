@@ -40,6 +40,9 @@ class Event
     /** @var string $target */
     public $target;
 
+    /** @var bool $parsed */
+    public $parsed;
+
     /**
      * @return int
      */

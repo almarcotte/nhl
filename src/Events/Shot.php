@@ -19,6 +19,8 @@ class Shot extends Event
      */
     const REGEX = "/([[:upper:]]+) ([[:upper:]]+) - #(\\d+) ([A-Z ]+), (\\w+), ([A-Za-z\\. ]+), (\\d+ ft.)/i";
 
+    const DESCRIBE = "[P%s: %s] %s shot %s by #%s %s (%s) from %s (%s)";
+
     /**
      * @return string
      */
@@ -29,12 +31,16 @@ class Shot extends Event
 
     /**
      * Parse a SHOT event line.
-     * @return mixed|void
+     * @return bool
      */
     public function parse()
     {
         // TOR ONGOAL - #21 VAN RIEMSDYK, Wrist, Off. Zone, 46 ft.
         $data = $this->toArray();
+        if (empty($data)) {
+            $this->parsed = false;
+            return false;
+        }
 
         $this->type = $data['type'];
         $this->location = $data['location'];
@@ -42,6 +48,10 @@ class Shot extends Event
         $this->team = new Team($data['team']);
         $this->target = $data['target'];
         $this->player = new Player($data['number'], $data['player'], $this->team);
+
+        $this->parsed = true;
+
+        return true;
     }
 
     /**
@@ -69,10 +79,19 @@ class Shot extends Event
      */
     public function describe()
     {
-        return "[P". $this->period .": " . $this->time."] " // Timestamp
-            . $this->type . " shot " . $this->target // Shot type and target
-            . " by " . $this->player->getName() . " (".$this->team->getName().")" // Player & team
-            . " from " . $this->location . "(".$this->distance.")"; // Location and distance
+        if ($this->parsed) {
+            return sprintf(self::DESCRIBE,
+                $this->period,
+                $this->time,
+                $this->type,
+                $this->target,
+                $this->player->number,
+                $this->player->name,
+                $this->team->name,
+                $this->location,
+                $this->distance
+            );
+        }
     }
 
 }
