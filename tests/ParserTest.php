@@ -25,4 +25,43 @@ class ParserTest extends PHPUnit_Framework_TestCase
         $this->parser = new \NHL\Parser(self::$command, self::$climate);
     }
 
+    public function testParseShot()
+    {
+        $line = "TOR ONGOAL - #21 VAN RIEMSDYK, Wrist, Off. Zone, 46 ft.";
+        $shot = new \NHL\Events\Shot();
+        $shot->parseLine($line);
+
+        $this->assertEquals(
+            new \NHL\Entities\Team('TOR'),
+            $shot->team
+        );
+        $this->assertEquals(
+            new \NHL\Entities\Player('#21', 'VAN RIEMSDYK', new \NHL\Entities\Team('TOR')),
+            $shot->player
+        );
+
+        $this->assertEquals('Wrist', $shot->type);
+        $this->assertEquals('Off. Zone', $shot->location);
+        $this->assertEquals('46 ft.', $shot->distance);
+    }
+
+    public function testParseShotAndReturnArray()
+    {
+        $line = "TOR ONGOAL - #21 VAN RIEMSDYK, Wrist, Off. Zone, 46 ft.";
+        $shot = new \NHL\Events\Shot();
+        $result = $shot->toArray($line);
+
+        $this->assertEquals(
+            [
+                'team' => 'TOR',
+                'target' => 'ONGOAL',
+                'number' => '#21',
+                'player' => 'VAN RIEMSDYK',
+                'type' => 'Wrist',
+                'location' => 'Off. Zone',
+                'distance' => '46 ft.'
+            ],
+            $result);
+    }
+
 }

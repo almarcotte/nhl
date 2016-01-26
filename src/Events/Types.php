@@ -5,7 +5,7 @@ namespace NHL\Events;
 class Types
 {
     const NONE = -1;
-    const GAMESTART = 0;
+    const PERIODSTART = 'PSTR';
     const FACEOFF = 'FAC';
     const HIT = 'HIT';
     const SHOT = 'SHOT';

@@ -19,7 +19,7 @@ class Miss extends Event
     /** @var Team $team */
     protected $team;
 
-    /** @var  Player $player */
+    /** @var Player $player */
     protected $player;
 
     /** @var string $shotType */

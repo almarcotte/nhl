@@ -2,6 +2,8 @@
 
 namespace NHL;
 
+use DOMDocument;
+use DOMXPath;
 use League\CLImate\CLImate;
 use NHL\Events\Shot;
 use NHL\Events\Types;
@@ -82,11 +84,12 @@ class Parser
      */
     public function parse()
     {
+        ini_set('memory_limit', -1); // uh oh
+
         $this->prepareFiles();
         $files = $this->getAllFileNames();
 
         foreach($files as $filename) {
-            $this->climate->out("Processing " . $filename);
             $this->processFile($filename);
         }
 
@@ -121,6 +124,8 @@ class Parser
      */
     private function processFile($filename)
     {
+        $this->climate->out("Processing " . $filename);
+
         $dom = new Dom();
         $dom->loadFromFile($filename);
         $lines = [];
@@ -158,14 +163,14 @@ class Parser
         if ($line[4] == 'SHOT' || $line[4] == 'MISS') {
             /** @var Shot $event */
             $event = Types::makeTypeFromString($line[4]);
+
+            $event->setEventNumber($line[0]);
+            $event->setPeriod($line[1]);
+            $event->setTime($line[3]);
+
+            $event->parseLine($line[5]);
+            $this->climate->out($event->describe());
         }
-
-        $event->setEventNumber($line[0]);
-        $event->setPeriod($line[1]);
-        $event->setTime($line[3]);
-
-        $event->parseLine($line[5]);
-        $this->climate->out($event->describe());
     }
 
 }
