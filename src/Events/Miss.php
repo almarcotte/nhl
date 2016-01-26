@@ -16,23 +16,7 @@ class Miss extends Event
         'Slap'
     ];
 
-    /** @var Team $team */
-    protected $team;
-
-    /** @var Player $player */
-    protected $player;
-
-    /** @var string $shotType */
-    protected $shotType;
-
-    /** @var string $missType */
-    protected $missType;
-
-    /** @var string $location */
-    protected $location;
-
-    /** @var string $distance */
-    protected $distance;
+    const REGEX = "/([[:upper:]]+) (#\\d+) ([A-Z ]+), (\\w+), ([A-Za-z\\. ]+), ([A-Za-z\\. ]+), (\\d+ ft.)/i";
 
     /**
      * @return int
@@ -47,22 +31,32 @@ class Miss extends Event
      * First 3 characters are the team, followed by #NUM and player's last name
      * Next: type of shot, type of miss, location, distance
      *
-     * @param $line
      * @return mixed|void
      */
-    public function parseLine($line)
+    public function parse()
     {
-        // MTL #74 EMELIN, Wrist, Wide of Net, Off. Zone, 62 ft.
-        $exploded = explode(',', $line);
-        $teamAndPlayer = $this->parsePlayerAndTeam($exploded[0]);
+        $data = $this->toArray();
 
-        $this->team = new Team($teamAndPlayer['team']);
-        $this->player = Player::create($teamAndPlayer['number'], $teamAndPlayer['player'], $this->team);
+        $this->type = $data['type'];
+        $this->location = $data['location'];
+        $this->distance = $data['distance'];
+        $this->target = $data['target'];
+        $this->team = new Team($data['team']);
+        $this->player = new Player($data['number'], $data['player'], $this->team);
+    }
 
-        $this->shotType = $exploded[1];
-        $this->missType = $exploded[2];
-        $this->location = $exploded[3];
-        $this->distance = $exploded[4];
+    public function toArray()
+    {
+        preg_match_all(self::REGEX, $this->line, $matches);
+        return [
+            'team' => $matches[1][0],
+            'number' => $matches[2][0],
+            'player' => $matches[3][0],
+            'type' => $matches[4][0],
+            'target' => $matches[5][0],
+            'location' => $matches[6][0],
+            'distance' => $matches[7][0]
+        ];
     }
 
     /**

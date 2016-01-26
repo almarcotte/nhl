@@ -2,13 +2,43 @@
 
 namespace NHL;
 
+use NHL\Entities\Player;
+use NHL\Entities\Team;
 use NHL\Events\Types;
 
 class Event
 {
-    protected $number;
-    protected $period;
-    protected $time;
+    public $number;
+
+    public $period;
+
+    public $time;
+
+    public $line;
+
+    /** @var Team $team */
+    public $team;
+
+    /** @var Player $player */
+    public $player;
+
+    /** @var string $shotType */
+    public $shotType;
+
+    /** @var string $missType */
+    public $missType;
+
+    /** @var string $location */
+    public $location;
+
+    /** @var string $distance */
+    public $distance;
+
+    /** @var string $type */
+    public $type;
+
+    /** @var string $target */
+    public $target;
 
     /**
      * @return int
@@ -18,13 +48,17 @@ class Event
         return Types::NONE;
     }
 
+    public function __construct($line)
+    {
+        $this->line = $line;
+    }
+
     /**
-     * @param $line
      * @return mixed
      */
-    public function parseLine($line)
+    public function parse()
     {
-        return $line;
+        return $this->line;
     }
 
     /**

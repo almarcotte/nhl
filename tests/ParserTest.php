@@ -28,8 +28,8 @@ class ParserTest extends PHPUnit_Framework_TestCase
     public function testParseShot()
     {
         $line = "TOR ONGOAL - #21 VAN RIEMSDYK, Wrist, Off. Zone, 46 ft.";
-        $shot = new \NHL\Events\Shot();
-        $shot->parseLine($line);
+        $shot = new \NHL\Events\Shot($line);
+        $shot->parse();
 
         $this->assertEquals(
             new \NHL\Entities\Team('TOR'),
@@ -48,8 +48,8 @@ class ParserTest extends PHPUnit_Framework_TestCase
     public function testParseShotAndReturnArray()
     {
         $line = "TOR ONGOAL - #21 VAN RIEMSDYK, Wrist, Off. Zone, 46 ft.";
-        $shot = new \NHL\Events\Shot();
-        $result = $shot->toArray($line);
+        $shot = new \NHL\Events\Shot($line);
+        $result = $shot->toArray();
 
         $this->assertEquals(
             [
@@ -62,6 +62,46 @@ class ParserTest extends PHPUnit_Framework_TestCase
                 'distance' => '46 ft.'
             ],
             $result);
+    }
+
+    public function testParseMissAndReturnArray()
+    {
+        $line = "MTL #74 EMELIN, Wrist, Wide of Net, Off. Zone, 62 ft.";
+        $miss = new \NHL\Events\Miss($line);
+        $this->assertEquals(
+            [
+                'team' => 'MTL',
+                'target' => 'Wide of Net',
+                'number' => '#74',
+                'player' => 'EMELIN',
+                'type' => 'Wrist',
+                'location' => 'Off. Zone',
+                'distance' => '62 ft.'
+            ],
+            $miss->toArray()
+        );
+    }
+
+    public function testParseMiss()
+    {
+        $line = "MTL #74 EMELIN, Wrist, Wide of Net, Off. Zone, 62 ft.";
+        $miss = new \NHL\Events\Miss($line);
+        $miss->parse();
+
+        $this->assertEquals(
+            new \NHL\Entities\Team('MTL'),
+            $miss->team
+        );
+        $this->assertEquals(
+            new \NHL\Entities\Player('#74', 'EMELIN', new \NHL\Entities\Team('MTL')),
+            $miss->player
+        );
+
+        $this->assertEquals('Wrist', $miss->type);
+        $this->assertEquals('Wide of Net', $miss->target);
+        $this->assertEquals('Off. Zone', $miss->location);
+        $this->assertEquals('62 ft.', $miss->distance);
+
     }
 
 }

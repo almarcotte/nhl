@@ -6,26 +6,17 @@ use NHL\Entities\Player;
 use NHL\Entities\Team;
 use NHL\Event;
 
+/**
+ * Class Shot
+ * Represents a shot on goal event
+ *
+ * @package NHL\Events
+ */
 class Shot extends Event
 {
-    /** @var Player $player */
-    public $player;
-
-    /** @var Team $team */
-    public $team;
-
-    /** @var string $target */
-    public $target;
-
-    /** @var string $type */
-    public $type;
-
-    /** @var string $location */
-    public $location;
-
-    /** @var string $distance */
-    public $distance;
-
+    /**
+     * REGEX to match a shot event line
+     */
     const REGEX = "/([[:upper:]]+) ([[:upper:]]+) - (#\\d+) ([A-Z ]+), (\\w+), ([A-Za-z\\. ]+), (\\d+ ft.)/i";
 
     /**
@@ -38,14 +29,12 @@ class Shot extends Event
 
     /**
      * Parse a SHOT event line.
-     *
-     * @param $line
      * @return mixed|void
      */
-    public function parseLine($line)
+    public function parse()
     {
         // TOR ONGOAL - #21 VAN RIEMSDYK, Wrist, Off. Zone, 46 ft.
-        $data = $this->toArray($line);
+        $data = $this->toArray();
 
         $this->type = $data['type'];
         $this->location = $data['location'];
@@ -55,12 +44,11 @@ class Shot extends Event
     }
 
     /**
-     * @param $line
      * @return array
      */
-    public function toArray($line)
+    public function toArray()
     {
-        preg_match_all(self::REGEX, $line, $matches);
+        preg_match_all(self::REGEX, $this->line, $matches);
         return [
             'team' => $matches[1][0],
             'target' => $matches[2][0],
