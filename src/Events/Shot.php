@@ -17,7 +17,7 @@ class Shot extends Event
     /**
      * REGEX to match a shot event line
      */
-    const REGEX = "/([[:upper:]]+) ([[:upper:]]+) - (#\\d+) ([A-Z ]+), (\\w+), ([A-Za-z\\. ]+), (\\d+ ft.)/i";
+    const REGEX = "/([[:upper:]]+) ([[:upper:]]+) - #(\\d+) ([A-Z ]+), (\\w+), ([A-Za-z\\. ]+), (\\d+ ft.)/i";
 
     /**
      * @return string
@@ -40,6 +40,7 @@ class Shot extends Event
         $this->location = $data['location'];
         $this->distance = $data['distance'];
         $this->team = new Team($data['team']);
+        $this->target = $data['target'];
         $this->player = new Player($data['number'], $data['player'], $this->team);
     }
 
@@ -48,16 +49,17 @@ class Shot extends Event
      */
     public function toArray()
     {
-        preg_match_all(self::REGEX, $this->line, $matches);
-        return [
-            'team' => $matches[1][0],
-            'target' => $matches[2][0],
-            'number' => $matches[3][0],
-            'player' => $matches[4][0],
-            'type' => $matches[5][0],
-            'location' => $matches[6][0],
-            'distance' => $matches[7][0]
-        ];
+        if (preg_match_all(self::REGEX, $this->line, $matches)) {
+            return [
+                'team' => $matches[1][0],
+                'target' => $matches[2][0],
+                'number' => $matches[3][0],
+                'player' => $matches[4][0],
+                'type' => $matches[5][0],
+                'location' => $matches[6][0],
+                'distance' => $matches[7][0]
+            ];
+        }
     }
 
     /**
@@ -67,8 +69,10 @@ class Shot extends Event
      */
     public function describe()
     {
-        return $this->type . " shot " . $this->target . " by " . $this->player->getName() . "(".$this->team->getName().")"
-            . " from " . $this->location . "(".$this->distance.")";
+        return "[P". $this->period .": " . $this->time."] " // Timestamp
+            . $this->type . " shot " . $this->target // Shot type and target
+            . " by " . $this->player->getName() . " (".$this->team->getName().")" // Player & team
+            . " from " . $this->location . "(".$this->distance.")"; // Location and distance
     }
 
 }

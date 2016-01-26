@@ -41,6 +41,7 @@ class ParserTest extends PHPUnit_Framework_TestCase
         );
 
         $this->assertEquals('Wrist', $shot->type);
+        $this->assertEquals('ONGOAL', $shot->target);
         $this->assertEquals('Off. Zone', $shot->location);
         $this->assertEquals('46 ft.', $shot->distance);
     }

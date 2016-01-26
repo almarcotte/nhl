@@ -16,7 +16,7 @@ class Miss extends Event
         'Slap'
     ];
 
-    const REGEX = "/([[:upper:]]+) (#\\d+) ([A-Z ]+), (\\w+), ([A-Za-z\\. ]+), ([A-Za-z\\. ]+), (\\d+ ft.)/i";
+    const REGEX = "/([[:upper:]]+) #(\\d+) ([A-Z ]+), (\\w+), ([A-Za-z\\. ]+), ([A-Za-z\\. ]+), (\\d+ ft.)/i";
 
     /**
      * @return int
@@ -64,8 +64,9 @@ class Miss extends Event
      */
     public function describe()
     {
-        return $this->player->getName() . "#" . $this->player->getNumber() . " from "
-            . $this->team->getName() . " missed a " . $this->shotType . " shot "
-            . $this->missType . " from " . $this->distance . " in " . $this->location;
+        return "[P" .$this->period. ": " . $this->time . "]" // Period and time
+            . $this->team->getName() . " " . $this->player->getName() . " (". $this->player->getNumber() . ")"
+            . " missed a " . $this->shotType . " shot from "
+            . $this->distance . " in " . $this->location;
     }
 }

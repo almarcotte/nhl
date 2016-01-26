@@ -161,14 +161,14 @@ class Parser
         }
 
         if ($line[4] == 'SHOT' || $line[4] == 'MISS') {
-            /** @var Shot $event */
-            $event = Types::makeTypeFromString($line[4]);
+            /** @var Event $event */
+            $event = Types::makeTypeFromString($line[4], $line[5]);
 
             $event->setEventNumber($line[0]);
             $event->setPeriod($line[1]);
             $event->setTime($line[3]);
 
-            $event->parseLine($line[5]);
+            $event->parse();
             $this->climate->out($event->describe());
         }
     }

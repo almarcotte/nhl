@@ -19,22 +19,23 @@ class Types
     const PERIODEND = 'PEND';
 
     /**
-     * @param $string
+     * @param string $event_string Represents the event type taken from the HTM file
+     * @param string $line Entire line to parse
      * @return mixed
      */
-    public static function makeTypeFromString($string)
+    public static function makeTypeFromString($event_string, $line)
     {
-        switch($string) {
+        switch ($event_string) {
             case 'FAC':
                 return self::FACEOFF;
             case 'HIT':
                 return self::HIT;
             case 'SHOT':
-                return new Shot();
+                return new Shot($line);
             case 'BLOCK':
                 return self::BLOCK;
             case 'MISS':
-                return new Miss();
+                return new Miss($line);
             default:
                 return self::NONE;
         }
