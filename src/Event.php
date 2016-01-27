@@ -8,12 +8,16 @@ use NHL\Events\Types;
 
 class Event
 {
+    /** @var int $number Event number (first face off is 1) */
     public $number;
 
+    /** @var int $period Period number */
     public $period;
 
+    /** @var string $time Event timestamp */
     public $time;
 
+    /** @var string $line Unparsed line */
     public $line;
 
     /** @var Team $team */
@@ -62,6 +66,14 @@ class Event
     public function parse()
     {
         return $this->line;
+    }
+
+    /**
+     * @return array
+     */
+    public function toArray()
+    {
+        return [];
     }
 
     /**

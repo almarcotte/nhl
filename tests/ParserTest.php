@@ -36,7 +36,7 @@ class ParserTest extends PHPUnit_Framework_TestCase
             $shot->team
         );
         $this->assertEquals(
-            new \NHL\Entities\Player('#21', 'VAN RIEMSDYK', new \NHL\Entities\Team('TOR')),
+            new \NHL\Entities\Player('21', 'VAN RIEMSDYK', new \NHL\Entities\Team('TOR')),
             $shot->player
         );
 
@@ -56,7 +56,7 @@ class ParserTest extends PHPUnit_Framework_TestCase
             [
                 'team' => 'TOR',
                 'target' => 'ONGOAL',
-                'number' => '#21',
+                'number' => '21',
                 'player' => 'VAN RIEMSDYK',
                 'type' => 'Wrist',
                 'location' => 'Off. Zone',
@@ -73,7 +73,7 @@ class ParserTest extends PHPUnit_Framework_TestCase
             [
                 'team' => 'MTL',
                 'target' => 'Wide of Net',
-                'number' => '#74',
+                'number' => '74',
                 'player' => 'EMELIN',
                 'type' => 'Wrist',
                 'location' => 'Off. Zone',
@@ -94,7 +94,7 @@ class ParserTest extends PHPUnit_Framework_TestCase
             $miss->team
         );
         $this->assertEquals(
-            new \NHL\Entities\Player('#74', 'EMELIN', new \NHL\Entities\Team('MTL')),
+            new \NHL\Entities\Player('74', 'EMELIN', new \NHL\Entities\Team('MTL')),
             $miss->player
         );
 
@@ -102,7 +102,35 @@ class ParserTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('Wide of Net', $miss->target);
         $this->assertEquals('Off. Zone', $miss->location);
         $this->assertEquals('62 ft.', $miss->distance);
+    }
 
+    public function testParseHit()
+    {
+        $line = "MTL #79 MARKOV HIT TOR #15 PARENTEAU, Def. Zone";
+        $hit = new \NHL\Events\Hit($line);
+        $hit->parse();
+
+        $this->assertEquals(
+            new \NHL\Entities\Team('MTL'),
+            $hit->team1
+        );
+
+        $this->assertEquals(
+            new \NHL\Entities\Team('TOR'),
+            $hit->team2
+        );
+
+        $this->assertEquals(
+            new \NHL\Entities\Player('79', 'MARKOV', new \NHL\Entities\Team('MTL')),
+            $hit->player1
+        );
+
+        $this->assertEquals(
+            new \NHL\Entities\Player('15', 'PARENTEAU', new \NHL\Entities\Team('TOR')),
+            $hit->player2
+        );
+
+        $this->assertEquals('Def. Zone', $hit->location);
     }
 
 }

@@ -160,11 +160,11 @@ class Parser
             return false;
         }
 
-        if ($line[4] == 'SHOT' || $line[4] == 'MISS') {
+        if ($line[4] == 'SHOT' || $line[4] == 'MISS' || $line[4] == 'HIT') {
             /** @var Event $event */
             $event = Types::makeTypeFromString($line[4], $line[5]);
 
-            $event->setEventNumber($line[0]);
+            $event->eve($line[0]);
             $event->setPeriod($line[1]);
             $event->setTime($line[3]);
 

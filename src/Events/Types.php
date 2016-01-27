@@ -29,7 +29,7 @@ class Types
             case 'FAC':
                 return self::FACEOFF;
             case 'HIT':
-                return self::HIT;
+                return new Hit($line);
             case 'SHOT':
                 return new Shot($line);
             case 'BLOCK':
