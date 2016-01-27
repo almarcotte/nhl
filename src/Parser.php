@@ -154,13 +154,17 @@ class Parser
         }
     }
 
+    /**
+     * @param $line
+     * @return bool
+     */
     private function createParsedEvent($line)
     {
         if (count($line) != 6) {
             return false;
         }
 
-        if ($line[4] == 'SHOT' || $line[4] == 'MISS' || $line[4] == 'HIT') {
+        if ($line[4] == 'SHOT' || $line[4] == 'MISS' || $line[4] == 'HIT' || $line[4] == 'FAC') {
             /** @var Event $event */
             $event = Types::makeTypeFromString($line[4], $line[5]);
 
@@ -170,6 +174,8 @@ class Parser
 
             $event->parse();
             $this->climate->out($event->describe());
+        } else {
+            $this->climate->out("Unsupported event: " . $line[4]);
         }
     }
 

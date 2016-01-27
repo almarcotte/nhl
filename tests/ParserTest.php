@@ -133,4 +133,23 @@ class ParserTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('Def. Zone', $hit->location);
     }
 
+    public function testParseHitAsArray()
+    {
+        $line = "MTL #79 MARKOV HIT TOR #15 PARENTEAU, Def. Zone";
+        $hit = new \NHL\Events\Hit($line);
+        $array = $hit->toArray();
+
+        $this->assertEquals(
+            [
+                'team1' => 'MTL',
+                'team2' => 'TOR',
+                'player1' => 'MARKOV',
+                'player2' => 'PARENTEAU',
+                'number1' => '79',
+                'number2' => '15',
+                'location' => 'Def. Zone'
+            ],
+            $array);
+    }
+
 }

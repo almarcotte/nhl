@@ -17,6 +17,7 @@ class Types
     const GOAL = 'GOAL';
     const GAMEEND = 'GEND';
     const PERIODEND = 'PEND';
+    const PENALTY = 'PENL';
 
     /**
      * @param string $event_string Represents the event type taken from the HTM file
@@ -26,16 +27,18 @@ class Types
     public static function makeTypeFromString($event_string, $line)
     {
         switch ($event_string) {
-            case 'FAC':
-                return self::FACEOFF;
-            case 'HIT':
+            case self::FACEOFF:
+                return new FaceOff($line);
+            case self::HIT:
                 return new Hit($line);
-            case 'SHOT':
+            case self::SHOT:
                 return new Shot($line);
-            case 'BLOCK':
+            case self::BLOCK:
                 return self::BLOCK;
-            case 'MISS':
+            case self::MISS:
                 return new Miss($line);
+            case self::PENALTY:
+                return self::PENALTY;
             default:
                 return self::NONE;
         }

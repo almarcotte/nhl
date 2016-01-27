@@ -61,14 +61,18 @@ class Event
     }
 
     /**
-     * @return mixed
+     * Parses the event line for this event
+     *
+     * @return bool
      */
     public function parse()
     {
-        return $this->line;
+        return true;
     }
 
     /**
+     * Parses the event line and returns an array
+     *
      * @return array
      */
     public function toArray()
@@ -101,24 +105,13 @@ class Event
     }
 
     /**
+     * Returns the event in a human readable format
+     *
+     * @inheritdoc
      * @return string
      */
     public function describe()
     {
         return '';
-    }
-
-    /**
-     * @param $value
-     * @return array
-     */
-    protected function parsePlayerAndTeam($value)
-    {
-        $exploded = explode(' ', $value);
-        return [
-            'team' => $exploded[0],
-            'number' => $exploded[1],
-            'player' => $exploded[2]
-        ];
     }
 }
