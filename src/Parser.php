@@ -164,7 +164,7 @@ class Parser
             /** @var Event $event */
             $event = Types::makeTypeFromString($line[4], $line[5]);
 
-            $event->eve($line[0]);
+            $event->setEventNumber($line[0]);
             $event->setPeriod($line[1]);
             $event->setTime($line[3]);
 

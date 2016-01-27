@@ -13,7 +13,7 @@ use NHL\Event;
 class Hit extends Event
 {
     const REGEX = "/([[:upper:]]+) #(\\d+) ([[:upper:]]+) HIT ([[:upper:]]+) #(\\d+) ([[:upper:]]+), ([A-Za-z\\.\\s]+)/i";
-    const DESCRIBE = "";
+    const DESCRIBE = "[P%s: %s] #%s %s (%s) hit #%s %s (%s) in %s";
 
     /** @var Team $team1 The hitter's team */
     public $team1;
@@ -35,6 +35,10 @@ class Hit extends Event
         return Types::HIT;
     }
 
+    /**
+     * @inheritdoc
+     * @return bool
+     */
     public function parse()
     {
         $data = $this->toArray();
@@ -48,8 +52,16 @@ class Hit extends Event
         $this->team2 = new Team($data['team2']);
         $this->player2 = new Player($data['number2'], $data['player2'], $this->team2);
         $this->location = $data['location'];
+
+        $this->parsed = true;
+
+        return true;
     }
 
+    /**
+     * @inheritdoc
+     * @return array
+     */
     public function toArray()
     {
         //MTL #79 MARKOV HIT TOR #15 PARENTEAU, Def. Zone
@@ -66,9 +78,25 @@ class Hit extends Event
         }
     }
 
+    /**
+     * @inheritdoc
+     * @return string
+     */
     public function describe()
     {
-        return $this->line;
+        if ($this->parsed) {
+            return sprintf(self::DESCRIBE,
+                $this->period,
+                $this->time,
+                $this->player1->number,
+                $this->player1->name,
+                $this->player1->team->name,
+                $this->player2->number,
+                $this->player2->name,
+                $this->player2->team->name,
+                $this->location
+            );
+        }
     }
 
 }
