@@ -29,11 +29,7 @@ class Miss extends Event
     }
 
     /**
-     * Parses an event line extracting miss specific info
-     * First 3 characters are the team, followed by #NUM and player's last name
-     * Next: type of shot, type of miss, location, distance
-     *
-     * @return bool
+     * @inheritdoc
      */
     public function parse()
     {
@@ -54,6 +50,9 @@ class Miss extends Event
         return true;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function toArray()
     {
         if (preg_match_all(self::REGEX, $this->line, $matches)) {
@@ -72,7 +71,7 @@ class Miss extends Event
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
     public function describe()
     {

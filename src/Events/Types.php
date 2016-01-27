@@ -2,6 +2,11 @@
 
 namespace NHL\Events;
 
+/**
+ * Class Types
+ *
+ * @package NHL\Events
+ */
 class Types
 {
     const NONE = -1;
@@ -20,8 +25,24 @@ class Types
     const PENALTY = 'PENL';
 
     /**
+     * Returns all the supported event types
+     *
+     * @return array
+     */
+    public static function getSupported() {
+        return [
+            Types::SHOT,
+            Types::MISS,
+            Types::HIT,
+            Types::FACEOFF,
+            Types::PENALTY
+        ];
+    }
+
+    /**
      * @param string $event_string Represents the event type taken from the HTM file
-     * @param string $line Entire line to parse
+     * @param string $line         Entire line to parse
+     *
      * @return mixed
      */
     public static function makeTypeFromString($event_string, $line)
@@ -38,7 +59,7 @@ class Types
             case self::MISS:
                 return new Miss($line);
             case self::PENALTY:
-                return self::PENALTY;
+                return new Penalty($line);
             default:
                 return self::NONE;
         }

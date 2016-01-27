@@ -107,7 +107,6 @@ class Event
     /**
      * Returns the event in a human readable format
      *
-     * @inheritdoc
      * @return string
      */
     public function describe()

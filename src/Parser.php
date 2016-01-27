@@ -136,7 +136,7 @@ class Parser
             $lineCount = 0;
             /** @var AbstractNode $td */
             foreach($tr->getChildren() as $td) {
-                $value = trim($td->text); // clean up the line
+                $value = trim(str_replace('&nbsp;', '@', $td->text)); // clean up the line, adding @ to make parsing a bit easier for certain events
                 if ($value) {
                     $lineCount++;
                     // Each event is actually 6 lines
@@ -164,7 +164,7 @@ class Parser
             return false;
         }
 
-        if ($line[4] == 'SHOT' || $line[4] == 'MISS' || $line[4] == 'HIT' || $line[4] == 'FAC') {
+        if (in_array($line[4], Types::getSupported())) {
             /** @var Event $event */
             $event = Types::makeTypeFromString($line[4], $line[5]);
 
