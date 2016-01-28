@@ -26,4 +26,12 @@ class Player
         $this->name = ucfirst($name);
         $this->team = $team;
     }
+
+    /**
+     * @return string
+     */
+    public function __toString()
+    {
+        return sprintf("#%s %s (%s)", $this->number, $this->name, $this->team->name);
+    }
 }

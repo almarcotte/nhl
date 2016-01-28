@@ -152,4 +152,63 @@ class ParserTest extends PHPUnit_Framework_TestCase
             $array);
     }
 
+    public function testGoalAssistAsArray()
+    {
+        $line = "TOR #21 VAN RIEMSDYK(1), Deflected, Def. Zone, 163 ft.Assists: #43 KADRI(1); #3 PHANEUF(1)";
+        $goal = new \NHL\Events\Goal($line);
+        $data = $goal->toArray();
+
+        $this->assertEquals([
+            [
+                'number' => '43',
+                'name' => 'KADRI'
+            ],
+            [
+                'number' => '3',
+                'name' => 'PHANEUF'
+            ]
+        ], $data['assists']);
+    }
+
+    public function testGoalInfoAsArray()
+    {
+        $line = "TOR #21 VAN RIEMSDYK(1), Deflected, Def. Zone, 163 ft.Assists: #43 KADRI(1); #3 PHANEUF(1)";
+        $goal = new \NHL\Events\Goal($line);
+        $data = $goal->toArray();
+
+        $this->assertEquals(
+            [
+                'team' => 'TOR',
+                'number' => '21',
+                'name' => 'VAN RIEMSDYK',
+                'type' => 'Deflected',
+                'location' => 'Def. Zone',
+                'distance' => '163'
+            ],
+            $data['goal']
+        );
+    }
+
+    public function testGoalParsed()
+    {
+        $line = "TOR #21 VAN RIEMSDYK(1), Deflected, Def. Zone, 163 ft.Assists: #43 KADRI(1); #3 PHANEUF(1)";
+        $goal = new \NHL\Events\Goal($line);
+        $goal->parse();
+
+        $this->assertEquals('Deflected', $goal->type);
+        $this->assertEquals('Def. Zone', $goal->location);
+        $this->assertEquals('163', $goal->distance);
+        $this->assertEquals(
+            new \NHL\Entities\Player('21', 'VAN RIEMSDYK', new \NHL\Entities\Team('TOR')),
+            $goal->player
+        );
+        $this->assertEquals([
+            new \NHL\Entities\Player('43', 'KADRI', new \NHL\Entities\Team('TOR')),
+            new \NHL\Entities\Player('3', 'PHANEUF', new \NHL\Entities\Team('TOR')),
+        ],
+            $goal->assists
+        );
+    }
+
+
 }

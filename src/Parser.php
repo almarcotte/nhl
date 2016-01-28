@@ -129,11 +129,13 @@ class Parser
         $dom = new Dom();
         $dom->loadFromFile($filename);
         $lines = [];
-
+        $events = $dom->find('tr.evenColor');
+        $progress = $this->climate->progress(count($events));
         /** @var AbstractNode $tr */
-        foreach($dom->find('tr.evenColor') as $tr) {
+        foreach($events as $tr) {
             $lineContent = [];
             $lineCount = 0;
+            $progress->advance();
             /** @var AbstractNode $td */
             foreach($tr->getChildren() as $td) {
                 $value = trim(str_replace('&nbsp;', '@', $td->text)); // clean up the line, adding @ to make parsing a bit easier for certain events

@@ -15,7 +15,7 @@ class Penalty extends Event
 {
     const PLAYERS_REGEX = "/([A-Z]{3})(?:\\h{1}#)(\\d{1,2})(?:\\h{1})([A-Z \\-]+)/";
     const DETAILS_REGEX = "/(?:@)([A-Za-z]+)(?:\\((\\d+) min\\))(?:[, ]+)(?:([A-Za-z .]+)Drawn By: )/";
-    const DESCRIBE = "[P%s: %s] #%s %s (%s) %s minutes for %s in %s drawn by #%s %s (%s)";
+    const DESCRIBE = "<light_red>[P%s: %s] #%s %s (%s) %s minutes for %s in %s drawn by #%s %s (%s)</light_red>";
 
     /** @var string $duration */
     public $duration;
@@ -74,6 +74,7 @@ class Penalty extends Event
                 'location' => trim($details[3][0])
             ];
         } else {
+            var_dump($this->line);
             return [];
         }
     }
@@ -83,20 +84,22 @@ class Penalty extends Event
      */
     public function describe()
     {
-        return sprintf(
-            self::DESCRIBE,
-            $this->period,
-            $this->time,
-            $this->player->number,
-            $this->player->name,
-            $this->player->team->name,
-            $this->duration,
-            $this->infraction,
-            $this->location,
-            $this->drawnPlayer->number,
-            $this->drawnPlayer->name,
-            $this->drawnPlayer->team->name
-        );
+        if ($this->parsed) {
+            return sprintf(
+                self::DESCRIBE,
+                $this->period,
+                $this->time,
+                $this->player->number,
+                $this->player->name,
+                $this->player->team->name,
+                $this->duration,
+                $this->infraction,
+                $this->location,
+                $this->drawnPlayer->number,
+                $this->drawnPlayer->name,
+                $this->drawnPlayer->team->name
+            );
+        }
     }
 
 }

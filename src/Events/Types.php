@@ -25,7 +25,7 @@ class Types
     const PENALTY = 'PENL';
 
     /**
-     * Returns all the supported event types
+     * Returns all the supported event types, only those will be parsed.
      *
      * @return array
      */
@@ -36,7 +36,9 @@ class Types
             self::HIT,
             self::FACEOFF,
             self::PENALTY,
-            self::BLOCK
+            self::BLOCK,
+            self::PERIODEND,
+            self::GOAL
         ];
     }
 
@@ -61,6 +63,11 @@ class Types
                 return new Miss($line);
             case self::PENALTY:
                 return new Penalty($line);
+            case self::PERIODEND:
+            case self::PERIODSTART:
+                return new Period($line);
+            case self::GOAL:
+                return new Goal($line);
             default:
                 return self::NONE;
         }
