@@ -31,11 +31,12 @@ class Types
      */
     public static function getSupported() {
         return [
-            Types::SHOT,
-            Types::MISS,
-            Types::HIT,
-            Types::FACEOFF,
-            Types::PENALTY
+            self::SHOT,
+            self::MISS,
+            self::HIT,
+            self::FACEOFF,
+            self::PENALTY,
+            self::BLOCK
         ];
     }
 
@@ -55,7 +56,7 @@ class Types
             case self::SHOT:
                 return new Shot($line);
             case self::BLOCK:
-                return self::BLOCK;
+                return new Block($line);
             case self::MISS:
                 return new Miss($line);
             case self::PENALTY:
