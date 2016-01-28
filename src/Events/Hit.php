@@ -12,8 +12,8 @@ use NHL\Event;
  */
 class Hit extends Event
 {
-    const REGEX = "/([[:upper:]]+) #(\\d+) ([[:upper:]]+) HIT ([[:upper:]]+) #(\\d+) ([[:upper:]]+), ([A-Za-z\\.\\s]+)/i";
-    const DESCRIBE = "[P%s: %s] #%s %s (%s) hit #%s %s (%s) in %s";
+    const REGEX = "/([A-Z]{3}) #(\\d+) ([A-Z\\s\\-\\.]+) HIT ([A-Z]{3}) #(\\d+) ([A-Z\\s\\-\\.]+), ([A-Za-z\\.\\s]+)/";
+    const DESCRIBE = "[P%s: %s] %s hit %s in %s";
 
     /** @var Team $team1 The hitter's team */
     public $team1;
@@ -27,13 +27,11 @@ class Hit extends Event
     /** @var Player $player2 The target */
     public $player2;
 
-    /**
-     * @return int
-     */
-    public function getType()
-    {
-        return Types::HIT;
-    }
+    /** @var string $location */
+    public $location;
+
+    /** @var string $eventType */
+    public $eventType = Types::HIT;
 
     /**
      * @inheritdoc
@@ -86,14 +84,10 @@ class Hit extends Event
     {
         if ($this->parsed) {
             return sprintf(self::DESCRIBE,
-                $this->period,
-                $this->time,
-                $this->player1->number,
-                $this->player1->name,
-                $this->player1->team->name,
-                $this->player2->number,
-                $this->player2->name,
-                $this->player2->team->name,
+                $this->eventPeriod,
+                $this->eventTime,
+                $this->player1,
+                $this->player2,
                 $this->location
             );
         }

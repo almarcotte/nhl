@@ -9,7 +9,7 @@ namespace NHL\Events;
  */
 class Types
 {
-    const NONE = -1;
+    const NONE = 'NONE';
     const PERIODSTART = 'PSTR';
     const FACEOFF = 'FAC';
     const HIT = 'HIT';
@@ -17,7 +17,7 @@ class Types
     const BLOCK = 'BLOCK';
     const MISS = 'MISS';
     const STOP = 'STOP';
-    const GIVE = 'BLOCK';
+    const GIVE = 'GIVE';
     const TAKE = 'TAKE';
     const GOAL = 'GOAL';
     const GAMEEND = 'GEND';
@@ -37,8 +37,12 @@ class Types
             self::FACEOFF,
             self::PENALTY,
             self::BLOCK,
+            self::PERIODSTART,
             self::PERIODEND,
-            self::GOAL
+            self::GOAL,
+            self::STOP,
+            self::TAKE,
+            self::GIVE
         ];
     }
 
@@ -68,6 +72,12 @@ class Types
                 return new Period($line);
             case self::GOAL:
                 return new Goal($line);
+            case self::STOP:
+                return new Stop($line);
+            case self::GIVE:
+                return new Give($line);
+            case self::TAKE:
+                return new Take($line);
             default:
                 return self::NONE;
         }

@@ -6,27 +6,24 @@ use NHL\Entities\Player;
 use NHL\Entities\Team;
 use NHL\Event;
 
+/**
+ * Class Miss
+ *
+ * @package NHL\Events
+ */
 class Miss extends Event
 {
-    protected $shotTypes = [
-        'Wrist',
-        'Snap',
-        'Backhand',
-        'Tip-In',
-        'Slap'
-    ];
+    const REGEX = "/([A-Z]{3}) #(\\d+) ([A-Z\\h\\-]+), ([A-Za-z\\.\\-\\h]+), ([A-Za-z\\.\\-\\h]+), ([A-Za-z\\.\\-\\h]+), (\\d+) ft./";
+    const DESCRIBE = "[P%s: %s] Missed %s shot by %s from %s (%s)";
 
-    const REGEX = "/([[:upper:]]+) #(\\d+) ([A-Z ]+), (\\w+), ([A-Za-z\\. ]+), ([A-Za-z\\. ]+), (\\d+ ft.)/i";
-
-    const DESCRIBE = "[P%s: %s] Missed %s shot by #%s %s (%s) from %s (%s)";
-
-    /**
-     * @return int
-     */
-    public function getType()
-    {
-        return Types::MISS;
-    }
+    /** @var string $eventType */
+    public $eventType = Types::MISS;
+    public $shotType;
+    public $location;
+    public $distance;
+    public $target;
+    public $player;
+    public $team;
 
     /**
      * @inheritdoc
@@ -39,7 +36,7 @@ class Miss extends Event
             return false;
         }
 
-        $this->type = $data['type'];
+        $this->shotType = $data['type'];
         $this->location = $data['location'];
         $this->distance = $data['distance'];
         $this->target = $data['target'];
@@ -78,12 +75,10 @@ class Miss extends Event
         if ($this->parsed) {
             return sprintf(
                 self::DESCRIBE,
-                $this->period,
-                $this->time,
-                $this->type,
-                $this->player->number,
-                $this->player->name,
-                $this->team->name,
+                $this->eventPeriod,
+                $this->eventTime,
+                $this->shotType,
+                $this->player,
                 $this->distance,
                 $this->location
             );

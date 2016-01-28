@@ -15,12 +15,30 @@ class Goal extends Event
 {
     const GOAL_REGEX = "/([A-Z]{3})(?:\\h{1}#)(\\d+)(?:\\h{1})([A-Z\\h-]+)\\(\\d\\),\\h(\\w+),\\h([\\w\\.\\h]+), (\\d+) ft./";
     const ASSIST_REGEX = "/(?:[:|;]) #(\\d+)\\h([A-Z\\h\\-]+)/";
-    const DESCRIBE = "[P%s: %s] Goal (%s) by %s from %s ft. in %s. Assists: %s";
+    const DESCRIBE = "<green>[P%s: %s] Goal (%s) by %s from %s ft. in %s. Assists: %s</green>";
 
     /**
      * @var Player[] $assists
      */
     public $assists = [];
+
+    /** @var string $eventType */
+    public $eventType = Types::GOAL;
+
+    /** @var Team $team */
+    public $team;
+
+    /** @var Player $player */
+    public $player;
+
+    /** @var string $location */
+    public $location;
+
+    /** @var string $distance */
+    public $distance;
+
+    /** @var string $shotType */
+    public $shotType;
 
     /**
      * @inheritdoc
@@ -37,7 +55,7 @@ class Goal extends Event
         $this->player = new Player($data['goal']['number'], $data['goal']['name'], $this->team);
         $this->location = $data['goal']['location'];
         $this->distance = $data['goal']['distance'];
-        $this->type = $data['goal']['type'];
+        $this->shotType = $data['goal']['type'];
         foreach($data['assists'] as $assist) {
             $this->assists[] = new Player($assist['number'], $assist['name'], $this->team);
         }
@@ -87,7 +105,17 @@ class Goal extends Event
      */
     public function describe()
     {
-        // const DESCRIBE = "[P%s: %s] Goal (%s) by %s from %s ft. in %s. Assists: %s";
-        return "<green>".$this->line."</green>";
+        if ($this->parsed) {
+            return sprintf(
+                self::DESCRIBE,
+                $this->eventPeriod,
+                $this->eventTime,
+                $this->shotType,
+                $this->player,
+                $this->distance,
+                $this->location,
+                implode(', ', $this->assists)
+            );
+        }
     }
 }

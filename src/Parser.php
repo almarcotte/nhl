@@ -175,7 +175,7 @@ class Parser
             $event->setTime($line[3]);
 
             $event->parse();
-            $this->climate->out($event->describe());
+            $this->climate->out(str_pad($event->eventNumber, 3, '0', STR_PAD_LEFT) . " " . $event->describe());
         } else {
             $this->climate->out("Unsupported event: " . $line[4]);
         }

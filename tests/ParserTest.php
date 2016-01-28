@@ -40,7 +40,7 @@ class ParserTest extends PHPUnit_Framework_TestCase
             $shot->player
         );
 
-        $this->assertEquals('Wrist', $shot->type);
+        $this->assertEquals('Wrist', $shot->shotType);
         $this->assertEquals('ONGOAL', $shot->target);
         $this->assertEquals('Off. Zone', $shot->location);
         $this->assertEquals('46 ft.', $shot->distance);
@@ -98,7 +98,7 @@ class ParserTest extends PHPUnit_Framework_TestCase
             $miss->player
         );
 
-        $this->assertEquals('Wrist', $miss->type);
+        $this->assertEquals('Wrist', $miss->shotType);
         $this->assertEquals('Wide of Net', $miss->target);
         $this->assertEquals('Off. Zone', $miss->location);
         $this->assertEquals('62 ft.', $miss->distance);
@@ -195,7 +195,7 @@ class ParserTest extends PHPUnit_Framework_TestCase
         $goal = new \NHL\Events\Goal($line);
         $goal->parse();
 
-        $this->assertEquals('Deflected', $goal->type);
+        $this->assertEquals('Deflected', $goal->shotType);
         $this->assertEquals('Def. Zone', $goal->location);
         $this->assertEquals('163', $goal->distance);
         $this->assertEquals(
@@ -208,6 +208,60 @@ class ParserTest extends PHPUnit_Framework_TestCase
         ],
             $goal->assists
         );
+    }
+
+    public function testFaceOffAsArray()
+    {
+        $line = "MTL won Off. Zone - MTL #51 DESHARNAIS vs TOR #16 SPALING";
+        $faceoff = new \NHL\Events\FaceOff($line);
+
+        $this->assertEquals(
+            [
+                'team_won' => 'MTL',
+                'location' => 'Off. Zone',
+                'home_team' => 'MTL',
+                'home_number' => '51',
+                'home_player' => 'DESHARNAIS',
+                'away_team' => 'TOR',
+                'away_number' => '16',
+                'away_player' => 'SPALING'
+            ],
+            $faceoff->toArray()
+        );
+    }
+
+    public function testFaceOffParsed()
+    {
+        $line = "MTL won Off. Zone - MTL #51 DESHARNAIS vs TOR #16 SPALING";
+        $faceoff = new \NHL\Events\FaceOff($line);
+
+        $this->assertTrue($faceoff->parse());
+
+        $this->assertEquals(
+            new \NHL\Entities\Team('MTL'),
+            $faceoff->team_won
+        );
+
+        $this->assertEquals(
+            new \NHL\Entities\Team('MTL'),
+            $faceoff->home_team
+        );
+
+        $this->assertEquals(
+            new \NHL\Entities\Team('TOR'),
+            $faceoff->away_team
+        );
+
+        $this->assertEquals(
+            new \NHL\Entities\Player('51', 'DESHARNAIS', new \NHL\Entities\Team('MTL')),
+            $faceoff->home_player
+        );
+
+        $this->assertEquals(
+            new \NHL\Entities\Player('16', 'SPALING', new \NHL\Entities\Team('TOR')),
+            $faceoff->away_player
+        );
+
     }
 
 

@@ -2,57 +2,34 @@
 
 namespace NHL;
 
-use NHL\Entities\Player;
-use NHL\Entities\Team;
-use NHL\Events\Types;
-
+/**
+ * Class Event
+ *
+ * @package NHL
+ */
 class Event
 {
-    /** @var int $number Event number (first face off is 1) */
-    public $number;
+    /** @var int $eventNumber Event number (first face off is 1) */
+    public $eventNumber;
 
-    /** @var int $period Period number */
-    public $period;
+    /** @var int $eventPeriod Period number */
+    public $eventPeriod;
 
-    /** @var string $time Event timestamp */
-    public $time;
+    /** @var string $eventTime Event timestamp */
+    public $eventTime;
 
-    /** @var string $line Unparsed line */
-    public $line;
-
-    /** @var Team $team */
-    public $team;
-
-    /** @var Player $player */
-    public $player;
-
-    /** @var string $shotType */
-    public $shotType;
-
-    /** @var string $missType */
-    public $missType;
-
-    /** @var string $location */
-    public $location;
-
-    /** @var string $distance */
-    public $distance;
-
-    /** @var string $type */
-    public $type;
-
-    /** @var string $target */
-    public $target;
+    /** @var string $eventType */
+    public $eventType;
 
     /** @var bool $parsed */
     public $parsed;
 
     /**
-     * @return int
+     * @return string
      */
     public function getType()
     {
-        return Types::NONE;
+        return $this->eventType;
     }
 
     public function __construct($line)
@@ -67,7 +44,9 @@ class Event
      */
     public function parse()
     {
-        return true;
+        $this->parsed = false;
+
+        return $this->parsed;
     }
 
     /**
@@ -85,7 +64,7 @@ class Event
      */
     public function setEventNumber($number)
     {
-        $this->number = $number;
+        $this->eventNumber = $number;
     }
 
     /**
@@ -93,7 +72,7 @@ class Event
      */
     public function setPeriod($period)
     {
-        $this->period = $period;
+        $this->eventPeriod = $period;
     }
 
     /**
@@ -101,7 +80,7 @@ class Event
      */
     public function setTime($time)
     {
-        $this->time = $time;
+        $this->eventTime = $time;
     }
 
     /**
@@ -111,6 +90,6 @@ class Event
      */
     public function describe()
     {
-        return '';
+        return "<yellow>WARNING:" . $this->getType() . ": " . $this->line . "</yellow>";
     }
 }

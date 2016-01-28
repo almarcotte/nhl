@@ -15,7 +15,7 @@ class Block extends Event
 
     const REGEX = "/([A-Z]{3}) #(\\d+) ([A-Z\\-\\h]+)(?: BLOCKED BY )([A-Z]{3}) #(\\d+) ([A-Z\\-\\h]+), (\\w+), ([\\w+.\\h]+)/";
 
-    const DESCRIBE = "[P%s: %s] #%s %s (%s) blocked a %s shot from #%s %s (%s) in %s";
+    const DESCRIBE = "[P%s: %s] %s blocked a %s shot from %s in %s";
 
     /** @var Team $teamBlocked */
     public $teamBlocked;
@@ -28,6 +28,13 @@ class Block extends Event
 
     /** @var Player $playerBlocking */
     public $playerBlocking;
+
+    /** @var string $eventType */
+    public $eventType = Types::BLOCK;
+
+    public $location;
+
+    public $shotType;
 
     /**
      * @inheritdoc
@@ -85,15 +92,11 @@ class Block extends Event
         // "[P%s: %s] #%s %s (%s) blocked a %s shot from #%s %s (%s) in %s";
 
         return sprintf(self::DESCRIBE,
-            $this->period,
-            $this->time,
-            $this->playerBlocking->number,
-            $this->playerBlocking->name,
-            $this->playerBlocking->team->name,
+            $this->eventPeriod,
+            $this->eventTime,
+            $this->playerBlocking,
             $this->shotType,
-            $this->playerBlocked->number,
-            $this->playerBlocked->name,
-            $this->playerBlocked->team->name,
+            $this->playerBlocked,
             $this->location
         );
 

@@ -14,8 +14,8 @@ use NHL\Event;
 class Penalty extends Event
 {
     const PLAYERS_REGEX = "/([A-Z]{3})(?:\\h{1}#)(\\d{1,2})(?:\\h{1})([A-Z \\-]+)/";
-    const DETAILS_REGEX = "/(?:@)([A-Za-z]+)(?:\\((\\d+) min\\))(?:[, ]+)(?:([A-Za-z .]+)Drawn By: )/";
-    const DESCRIBE = "<light_red>[P%s: %s] #%s %s (%s) %s minutes for %s in %s drawn by #%s %s (%s)</light_red>";
+    const DETAILS_REGEX = "/(?:@)([A-Za-z\\h]+)(?:\\((\\d+) min\\))(?:[, ]+)(?:([A-Za-z .]+)Drawn By: )/";
+    const DESCRIBE = "<light_red>[P%s: %s] %s %s minutes for %s in %s drawn by %s</light_red>";
 
     /** @var string $duration */
     public $duration;
@@ -28,6 +28,18 @@ class Penalty extends Event
 
     /** @var Team $drawnTeam */
     public $drawnTeam;
+
+    /** @var string $eventType */
+    public $eventType = Types::PENALTY;
+
+    /** @var Team $team */
+    public $team;
+
+    /** @var Player $player */
+    public $player;
+
+    /** @var string $location */
+    public $location;
 
     /**
      * @inheritdoc
@@ -87,17 +99,13 @@ class Penalty extends Event
         if ($this->parsed) {
             return sprintf(
                 self::DESCRIBE,
-                $this->period,
-                $this->time,
-                $this->player->number,
-                $this->player->name,
-                $this->player->team->name,
+                $this->eventPeriod,
+                $this->eventTime,
+                $this->player,
                 $this->duration,
                 $this->infraction,
                 $this->location,
-                $this->drawnPlayer->number,
-                $this->drawnPlayer->name,
-                $this->drawnPlayer->team->name
+                $this->drawnPlayer
             );
         }
     }

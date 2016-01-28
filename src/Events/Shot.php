@@ -17,17 +17,30 @@ class Shot extends Event
     /**
      * REGEX to match a shot event line
      */
-    const REGEX = "/([[:upper:]]+) ([[:upper:]]+) - #(\\d+) ([A-Z ]+), (\\w+), ([A-Za-z\\. ]+), (\\d+ ft.)/i";
+    const REGEX = "/([A-Z]{3}) ([A-Z]+) - #(\\d+) ([A-Z\\h\\-]+), ([A-Za-z\\h\\-]+), ([A-Za-z\\. ]+), (\\d+) ft./";
 
-    const DESCRIBE = "[P%s: %s] %s shot %s by #%s %s (%s) from %s (%s)";
+    const DESCRIBE = "[P%s: %s] %s shot %s by %s from %s (%s ft.)";
 
-    /**
-     * @return string
-     */
-    public function getType()
-    {
-        return Types::SHOT;
-    }
+    /** @var string $eventType */
+    public $eventType = Types::SHOT;
+
+    /** @var string $shotType */
+    public $shotType;
+
+    /** @var string $location */
+    public $location;
+
+    /** @var string $distance */
+    public $distance;
+
+    /** @var Team $team */
+    public $team;
+
+    /** @var string $target */
+    public $target;
+
+    /** @var Player $ */
+    public $player;
 
     /**
      * Parse a SHOT event line.
@@ -42,7 +55,7 @@ class Shot extends Event
             return false;
         }
 
-        $this->type = $data['type'];
+        $this->shotType = $data['type'];
         $this->location = $data['location'];
         $this->distance = $data['distance'];
         $this->team = new Team($data['team']);
@@ -81,13 +94,11 @@ class Shot extends Event
     {
         if ($this->parsed) {
             return sprintf(self::DESCRIBE,
-                $this->period,
-                $this->time,
-                $this->type,
+                $this->eventPeriod,
+                $this->eventTime,
+                $this->shotType,
                 $this->target,
-                $this->player->number,
-                $this->player->name,
-                $this->team->name,
+                $this->player,
                 $this->location,
                 $this->distance
             );

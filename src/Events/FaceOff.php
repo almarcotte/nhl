@@ -14,7 +14,7 @@ class FaceOff extends Event
 {
 
     const REGEX = "/([[:upper:]]+) won ([A-Za-z\\.\\s]+) - ([[:upper:]]+) #(\\d+) ([[:upper:]\\s]+) vs ([[:upper:]]+) #(\\d+) ([[:upper:]\\s]+)/i";
-    const DESCRIBE = "[P%s: %s] %s won faceoff in %s - #%s %s (%s) vs #%s %s (%s)";
+    const DESCRIBE = "[P%s: %s] %s won faceoff in %s - %s vs %s";
 
     /** @var Team $team_won */
     public $team_won;
@@ -30,6 +30,10 @@ class FaceOff extends Event
 
     /** @var Player $away_player */
     public $away_player;
+
+    /** @var string $eventType */
+    public $eventType = Types::FACEOFF;
+    public $location;
 
     /**
      * @inheritdoc
@@ -50,6 +54,8 @@ class FaceOff extends Event
         $this->home_player = new Player($data['home_number'], $data['home_player'], $this->home_team);
         $this->away_player = new Player($data['away_number'], $data['away_player'], $this->away_team);
 
+        $this->parsed = true;
+        return true;
     }
 
     /**
@@ -75,19 +81,16 @@ class FaceOff extends Event
 
     public function describe()
     {
-        // [P%s: %s] %s won faceoff in %s - #%s %s (%s) vs #%s %s (%s)
-        return sprintf(self::DESCRIBE,
-            $this->period,
-            $this->time,
-            $this->team_won->name,
-            $this->location,
-            $this->home_player->number,
-            $this->home_player->name,
-            $this->home_player->team->name,
-            $this->away_player->number,
-            $this->away_player->name,
-            $this->away_player->team->name
-        );
+        if ($this->parsed) {
+            return sprintf(self::DESCRIBE,
+                $this->eventPeriod,
+                $this->eventTime,
+                $this->team_won,
+                $this->location,
+                $this->home_player,
+                $this->away_player
+            );
+        }
     }
 
 }
