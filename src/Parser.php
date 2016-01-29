@@ -110,21 +110,11 @@ class Parser
     {
         $this->command->out("Processing " . $filename);
 
+        // Create a game object with home/away teams and other info
         $game = $this->createGameWithInfo($filename);
 
         $dom = new Dom();
         $dom->loadFromFile($filename);
-
-        $result = $dom->find('table#Visitor');
-        /** @var AbstractNode $res */
-        foreach($result as $res) {
-            /** @var AbstractNode $out */
-            foreach($res->getChildren() as $out) {
-                var_dump($out);
-            }
-        }
-        die();
-
 
         $lines = [];
         /** @var AbstractNode $tr */
@@ -175,7 +165,6 @@ class Parser
             $event->setTime($line[3]);
 
             $event->parse();
-            //$this->climate->out(str_pad($event->eventNumber, 3, '0', STR_PAD_LEFT) . " " . $event->describe());
             return $event;
         } else {
             return false;
@@ -254,21 +243,24 @@ class Parser
         /** @var \DOMNode $childNode */
         foreach($doc->getElementById('GameInfo')->childNodes as $childNode) {
             $value = trim(preg_replace('!\s+!', ' ', $childNode->textContent));
+            $value = preg_replace('/[^a-zA-Z0-9\s\:]/', '', $value);
             if (mb_strlen($value) <= 2) continue;
 
-            if (preg_match("/([A-Za-z]+day, [A-Za-z]+ \\d+, \\d+)/", $value, $matches)) {
+            if (preg_match("/([A-Za-z]+day [A-Za-z]+ \\d+ \\d+)/", $value, $matches)) {
                 $game->date = $matches[1];
-            } else if (preg_match("/^Attendance (\\d{1,2},\\d{2,3}) at ([A-Za-z\\h\\-]+)$/", $value, $matches)) {
-                $game->attendance = $matches[1];
+            } else if (preg_match("/Attendance (\\d+)(?:at)([A-Za-z\\h\\-]+)/", $value, $matches)) {
+                $game->attendance = (int)$matches[1];
                 $game->venue = $matches[2];
-            } else if (preg_match("/(?:Start|End) (\\d+:\\d+) ([A-Z]+)/", $value, $matches)) {
+            } else if (preg_match_all("/(?:Start|End)(\\d+:\\d+)([A-Z]+)/", $value, $matches)) {
                 $game->startTime = $matches[1][0];
                 $game->startTimeZone = $matches[2][0];
                 $game->endTime = $matches[1][1];
                 $game->endTimeZone = $matches[2][1];
+            } else if ($value == "Final") {
+                $game->wentOverTime = false;
             }
         }
-
+        
         libxml_use_internal_errors(false);
 
         return $game;

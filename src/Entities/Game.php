@@ -13,9 +13,6 @@ class Game
     /** @var Team $away */
     public $away;
 
-    /** @var \DateTime $datetime */
-    public $datetime;
-
     /** @var int $homeScore */
     public $homeScore;
 
@@ -24,6 +21,27 @@ class Game
 
     /** @var bool $wentOverTime */
     public $wentOverTime;
+
+    /** @var string $date */
+    public $date;
+
+    /** @var int $attendance */
+    public $attendance;
+
+    /** @var string $venue */
+    public $venue;
+
+    /** @var string $startTime */
+    public $startTime;
+
+    /** @var string $startTimeZone */
+    public $startTimeZone;
+
+    /** @var string $endTime */
+    public $endTime;
+
+    /** @var string $endTimeZone */
+    public $endTimeZone;
 
     /** @var Event[] $events */
     private $events;
