@@ -15,8 +15,8 @@ use NHL\Event;
 class Period extends Event
 {
 
-    const REGEX = "/Period (End|Start)- Local time: (\\d+:\\d+) ([A-Z]+)/";
-    const DESCRIBE = "[P%s: %s] %s of Period at %s %s local time";
+    const REGEX = "/(Period|Game) (End|Start)- Local time: (\\d+:\\d+) ([A-Z]+)/";
+    const DESCRIBE = "[P%s: %s] %s of %s at %s %s local time";
 
     /** @var string $eventType */
     public $eventType = Types::PERIODSTART;
@@ -37,7 +37,11 @@ class Period extends Event
 
         $this->time = $data['time'];
         $this->timezone = $data['timezone'];
-        $this->eventType = ($data['event'] == 'Start') ? Types::PERIODSTART : Types::PERIODEND;
+        if ($data['event'] == 'Game') {
+            $this->eventType = Types::GAMEEND;
+        } else {
+            $this->eventType = ($data['result'] == 'Start') ? Types::PERIODSTART : Types::PERIODEND;
+        }
 
         $this->parsed = true;
         return true;
@@ -51,8 +55,9 @@ class Period extends Event
         if (preg_match_all(self::REGEX, $this->line, $matches)) {
             return [
                 'event' => $matches[1][0],
-                'time' => $matches[2][0],
-                'timezone' => $matches[3][0]
+                'result' => $matches[2][0],
+                'time' => $matches[3][0],
+                'timezone' => $matches[4][0]
             ];
         } else {
             return [];
@@ -65,11 +70,15 @@ class Period extends Event
     public function describe()
     {
         if ($this->parsed) {
+            $what = in_array($this->eventType, [Types::PERIODSTART, Types::PERIODEND]) ? 'Period' : 'Game';
+            $endsOrStarts = $this->eventType !== Types::GAMEEND ? ($this->eventType == Types::PERIODSTART ? 'Start' : 'End') : 'End';
+            //const DESCRIBE = "[P%s: %s] %s of %s at %s %s local time";
             return sprintf(
                 self::DESCRIBE,
                 $this->eventPeriod,
                 $this->eventTime,
-                $this->eventType == Types::PERIODSTART ? 'Start' : 'End',
+                $endsOrStarts,
+                $what,
                 $this->time,
                 $this->timezone
             );

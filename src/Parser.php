@@ -2,10 +2,7 @@
 
 namespace NHL;
 
-use DOMDocument;
-use DOMXPath;
 use League\CLImate\CLImate;
-use NHL\Events\Shot;
 use NHL\Events\Types;
 use NHL\Exceptions\NHLParserException;
 use PHPHtmlParser\Dom;
@@ -129,13 +126,10 @@ class Parser
         $dom = new Dom();
         $dom->loadFromFile($filename);
         $lines = [];
-        $events = $dom->find('tr.evenColor');
-        $progress = $this->climate->progress(count($events));
         /** @var AbstractNode $tr */
-        foreach($events as $tr) {
+        foreach ($dom->find('tr.evenColor') as $tr) {
             $lineContent = [];
             $lineCount = 0;
-            $progress->advance();
             /** @var AbstractNode $td */
             foreach($tr->getChildren() as $td) {
                 $value = trim(str_replace('&nbsp;', '@', $td->text)); // clean up the line, adding @ to make parsing a bit easier for certain events

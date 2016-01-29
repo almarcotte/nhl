@@ -42,7 +42,8 @@ class Types
             self::GOAL,
             self::STOP,
             self::TAKE,
-            self::GIVE
+            self::GIVE,
+            self::GAMEEND
         ];
     }
 
@@ -69,6 +70,7 @@ class Types
                 return new Penalty($line);
             case self::PERIODEND:
             case self::PERIODSTART:
+            case self::GAMEEND:
                 return new Period($line);
             case self::GOAL:
                 return new Goal($line);
