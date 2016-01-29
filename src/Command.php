@@ -5,6 +5,7 @@ namespace NHL;
 use League\CLImate\CLImate;
 use NHL\Exceptions\NHLDownloaderException;
 use NHL\Exceptions\NHLParserException;
+use NHL\Exporters\PlainText;
 
 /**
  * Class Command
@@ -32,6 +33,9 @@ class Command
         $this->createCommandLineArguments();
         $this->climate->description(self::DESCRIPTION);
         $this->climate->arguments->parse();
+
+        $this->exporter = new PlainText();
+        $this->exporter->setCommand($this);
 
         if ($this->climate->arguments->defined('help')) {
             $this->climate->usage();
@@ -116,6 +120,17 @@ class Command
                 'noValue' => true
             ],
         ]);
+    }
+
+    /**
+     * Prints a console message only if verbose is on
+     *
+     * @param $msg
+     */
+    public function out($msg) {
+        if ($this->climate->arguments->defined('verbose')) {
+            $this->climate->out($msg);
+        }
     }
 
 }

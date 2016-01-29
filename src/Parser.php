@@ -3,8 +3,10 @@
 namespace NHL;
 
 use League\CLImate\CLImate;
+use NHL\Entities\Game;
 use NHL\Events\Types;
 use NHL\Exceptions\NHLParserException;
+use NHL\Exporters\PlainText;
 use PHPHtmlParser\Dom;
 use PHPHtmlParser\Dom\AbstractNode;
 use RecursiveDirectoryIterator;
@@ -87,41 +89,26 @@ class Parser
         $files = $this->getAllFileNames();
 
         foreach($files as $filename) {
-            $this->processFile($filename);
+            $game = $this->processFile($filename);
+
+            $this->command->out("Exporting...");
+            $this->command->exporter->setGame($game)->export();
         }
 
         return true;
     }
 
     /**
-     * Gets all file names in the data file directory
+     * Parses the given file and returns a Game object
      *
-     * @return array
-     */
-    private function getAllFileNames()
-    {
-
-        $directory = new RecursiveDirectoryIterator(
-            $this->climate->arguments->get('files')
-        );
-        $iterator = new RecursiveIteratorIterator($directory);
-        $regex = new RegexIterator($iterator, '/^.+\.HTM$/i', RecursiveRegexIterator::GET_MATCH);
-
-        $files = array_keys(iterator_to_array($regex));
-
-        usort($files, function ($a, $b) {
-            return strcmp($a, $b);
-        });
-
-        return $files;
-    }
-
-    /**
-     * @param $filename
+     * @param string $filename
+     *
+     * @return Game
      */
     private function processFile($filename)
     {
-        $this->climate->out("Processing " . $filename);
+        $this->command->out("Processing " . $filename);
+        $game = new Game('ABCTEST');
 
         $dom = new Dom();
         $dom->loadFromFile($filename);
@@ -146,13 +133,17 @@ class Parser
         }
 
         foreach($lines as $line) {
-            $this->createParsedEvent($line);
+            if ($event = $this->createParsedEvent($line)) {
+                $game->addEvent($event);
+            }
         }
+
+        return $game;
     }
 
     /**
      * @param $line
-     * @return bool
+     * @return Event|bool
      */
     private function createParsedEvent($line)
     {
@@ -169,10 +160,33 @@ class Parser
             $event->setTime($line[3]);
 
             $event->parse();
-            $this->climate->out(str_pad($event->eventNumber, 3, '0', STR_PAD_LEFT) . " " . $event->describe());
+            //$this->climate->out(str_pad($event->eventNumber, 3, '0', STR_PAD_LEFT) . " " . $event->describe());
+            return $event;
         } else {
-            $this->climate->out("Unsupported event: " . $line[4]);
+            return false;
         }
+    }
+
+    /**
+     * Gets all file names in the data file directory
+     *
+     * @return array
+     */
+    private function getAllFileNames()
+    {
+        $directory = new RecursiveDirectoryIterator(
+            $this->climate->arguments->get('files')
+        );
+        $iterator = new RecursiveIteratorIterator($directory);
+        $regex = new RegexIterator($iterator, '/^.+\.HTM$/i', RecursiveRegexIterator::GET_MATCH);
+
+        $files = array_keys(iterator_to_array($regex));
+
+        usort($files, function ($a, $b) {
+            return strcmp($a, $b);
+        });
+
+        return $files;
     }
 
 }

@@ -100,16 +100,16 @@ class Downloader
             $file_local = $season_folder.DIRECTORY_SEPARATOR.$file_name;
             $file_remote = $url.$file_name;
 
-            $this->out("Downloading from " . $file_remote . " to " . $file_local);
+            $this->command->out("Downloading from " . $file_remote . " to " . $file_local);
             $this->fetchAndSaveFile($file_remote, $file_local);
 
             if (!$this->climate->arguments->defined('quick') && ($this->downloaded % self::SLEEP_EVERY == 0)) {
-                $this->out("Sleeping for " . self::SLEEP_TIME . " seconds...");
+                $this->command->out("Sleeping for " . self::SLEEP_TIME . " seconds...");
                 sleep(self::SLEEP_TIME);
-                $this->out("Resuming...");
+                $this->command->out("Resuming...");
             }
         }
-        $this->out("Downloaded {$this->downloaded} files after trying {$game_number}");
+        $this->command->out("Downloaded {$this->downloaded} files after trying {$game_number}");
     }
 
     private function initSeasonFolder()
@@ -117,7 +117,7 @@ class Downloader
         // Make a folder for the current season, if it doesn't exist
         $season_folder = $this->climate->arguments->get('files').DIRECTORY_SEPARATOR.$this->options['season'];
         if (!file_exists($season_folder)) {
-            $this->out("Attempting to create season folder at " . $season_folder);
+            $this->command->out("Attempting to create season folder at " . $season_folder);
             mkdir($season_folder);
         }
 
@@ -131,23 +131,12 @@ class Downloader
     protected function fetchAndSaveFile($url, $output)
     {
         if (file_exists($output) && !$this->climate->arguments->defined('force')) {
-            $this->out("Skipped because it already exists");
+            $this->command->out("Skipped because it already exists");
             return;
         }
         $this->downloaded++;
 
        file_put_contents($output, fopen($url, 'r'));
-    }
-
-    /**
-     * Prints a console message only if verbose is on
-     *
-     * @param $msg
-     */
-    protected function out($msg) {
-        if ($this->climate->arguments->defined('verbose')) {
-            $this->climate->out($msg);
-        }
     }
 
 }

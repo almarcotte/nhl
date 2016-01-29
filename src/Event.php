@@ -7,7 +7,7 @@ namespace NHL;
  *
  * @package NHL
  */
-class Event
+abstract class Event
 {
     /** @var int $eventNumber Event number (first face off is 1) */
     public $eventNumber;
@@ -42,22 +42,14 @@ class Event
      *
      * @return bool
      */
-    public function parse()
-    {
-        $this->parsed = false;
-
-        return $this->parsed;
-    }
+    public abstract function parse();
 
     /**
      * Parses the event line and returns an array
      *
      * @return array
      */
-    public function toArray()
-    {
-        return [];
-    }
+    public abstract function toArray();
 
     /**
      * @param $number
@@ -88,8 +80,5 @@ class Event
      *
      * @return string
      */
-    public function describe()
-    {
-        return "<yellow>WARNING:" . $this->getType() . ": " . $this->line . "</yellow>";
-    }
+    public abstract function describe();
 }
