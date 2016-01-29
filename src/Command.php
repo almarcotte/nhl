@@ -18,6 +18,8 @@ class Command
 {
     const DESCRIPTION = "An NHL.com data file processor";
 
+    const DEFAULT_CONFIG = __DIR__ . '/../config.ini';
+
     /** @var CLImate $climate */
     public $climate;
 
@@ -50,6 +52,18 @@ class Command
             $this->showList();
             exit();
         }
+
+        if ($this->climate->arguments->defined('config')) {
+            $config_file = $this->climate->arguments->get('config');
+            if (!file_exists($config_file)) {
+                die("Couldn't read configuration file. Make sure the path is correct.");
+            }
+        } else {
+            $config_file = self::DEFAULT_CONFIG;
+        }
+
+        $this->config = new Config($config_file);
+
 
         $this->downloader = new Downloader($this);
         if ($this->climate->arguments->defined('season')) {
@@ -94,6 +108,11 @@ class Command
                 'longPrefix' => 'help',
                 'description' => 'Displays the help',
                 'noValue' => true
+            ],
+            'config' => [
+                'prefix' => 'c',
+                'longPrefix' => 'config',
+                'description' => 'Provide a configuration file instead of using the command line arguments'
             ],
             'parse-only' => [
                 'prefix' => 'p',
