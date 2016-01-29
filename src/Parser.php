@@ -2,12 +2,10 @@
 
 namespace NHL;
 
-use League\CLImate\CLImate;
 use NHL\Entities\Game;
 use NHL\Entities\Team;
 use NHL\Events\Types;
 use NHL\Exceptions\ParserException;
-use NHL\Exporters\File;
 use PHPHtmlParser\Dom;
 use PHPHtmlParser\Dom\AbstractNode;
 use RecursiveDirectoryIterator;
@@ -26,52 +24,29 @@ class Parser
     /** @var Command $command */
     protected $command;
 
-    /** @var CLImate $climate */
-    protected $climate;
-
-    /** @var array $options */
-    protected $options = [];
-
     /**
      * Parser constructor.
      *
      * @param Command    $command
-     * @param Downloader $downloader
      */
-    public function __construct(Command $command, Downloader $downloader = null)
+    public function __construct(Command $command)
     {
         $this->command = $command;
-        $this->downloader = $downloader;
     }
 
     /**
-     * Sets the parser-specific options
-     *
-     * @param array $options
-     */
-    public function setOptions(array $options = [])
-    {
-        $this->options = $options;
-    }
-
-    /**
-     * Makes sure we have files to parse. If not only parsing, initiate the download
+     * Makes sure we have files to parse.
      *
      * @throws ParserException
      */
     private function prepareFiles()
     {
-        // Not downloading, make sure files exist to parse
-        if (is_null($this->downloader)) {
-            // Try and parse existing files, no additional downloads
-            if (!$this->command->climate->arguments->defined('files')) {
-                throw new ParserException("Couldn't find setting for downloaded file location.\n");
-            }
-            if (!is_dir($this->command->climate->arguments->get('files'))) {
-                throw new ParserException("The path provided for files isn't a directory.\n");
-            }
-        } else {
-            $this->downloader->download();
+        // Try and parse existing files, no additional downloads
+        if (!$this->command->config->get('general', 'files')) {
+            throw new ParserException("Couldn't find setting for downloaded file location.\n");
+        }
+        if (!is_dir($this->command->config->get('general', 'files'))) {
+            throw new ParserException("The path provided for files isn't a directory.\n");
         }
     }
 
@@ -179,9 +154,7 @@ class Parser
      */
     private function getAllFileNames()
     {
-        $directory = new RecursiveDirectoryIterator(
-            $this->command->climate->arguments->get('files')
-        );
+        $directory = new RecursiveDirectoryIterator($this->command->config->get('general', 'files'));
         $iterator = new RecursiveIteratorIterator($directory);
         $regex = new RegexIterator($iterator, '/^.+\.HTM$/i', RecursiveRegexIterator::GET_MATCH);
 
@@ -230,7 +203,7 @@ class Parser
         }
 
         // Generate the game ID based off of the filename
-        $parts = explode('/', $filename);
+        $parts = explode(DIRECTORY_SEPARATOR, $filename);
         $season = $parts[count($parts) - 2];
         $game_number = str_replace('.HTM', '', end($parts));
         $game_id = $season.$game_number;

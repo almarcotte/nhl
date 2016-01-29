@@ -2,7 +2,6 @@
 
 namespace NHL;
 
-use League\CLImate\CLImate;
 use NHL\Exceptions\DownloaderException;
 
 /**
@@ -53,28 +52,9 @@ class Downloader
     {
         $this->command = $command;
 
-        if (!$this->command->climate->arguments->defined('files')) {
+        if (!$this->command->config->get('general', 'files')) {
             throw new DownloaderException("No path provided to save the files. See --help for info.\n");
         }
-    }
-
-    /**
-     * Sets the season ID (usually 2 years, ie. 20152016)
-     *
-     * @param int|string $season
-     */
-    public function setSeason($season)
-    {
-        if (mb_strlen($season) !== 8) {
-            throw new \InvalidArgumentException("Season should be in a AAAABBBB format, ie. 20152016\n");
-        }
-
-        $this->options['season'] = $season;
-    }
-
-    public function getSeason()
-    {
-        return isset($this->options['season']) ? $this->options['season'] : null;
     }
 
     /**
@@ -85,7 +65,7 @@ class Downloader
         /** @var string $url http://.../SEASON/ */
         $url = sprintf(self::SOURCE_BASE, $this->options['season']);
 
-        if (!is_writable($this->command->climate->arguments->get('files'))) {
+        if (!is_writable($this->command->config->get('paths', 'files'))) {
             throw new DownloaderException("The specified folder is not writable\n");
         }
 
@@ -112,7 +92,7 @@ class Downloader
     private function initSeasonFolder()
     {
         // Make a folder for the current season, if it doesn't exist
-        $season_folder = $this->command->climate->arguments->get('files').DIRECTORY_SEPARATOR.$this->options['season'];
+        $season_folder = $this->command->config->get('general', 'files') . DIRECTORY_SEPARATOR . $this->options['season'];
         if (!file_exists($season_folder)) {
             $this->command->out("Attempting to create season folder at ".$season_folder);
             mkdir($season_folder);

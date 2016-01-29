@@ -11,8 +11,6 @@ class Config
     /** @var array $data */
     private $data;
 
-    /** @var array $section */
-    private $section;
 
     /**
      * Config constructor.
@@ -22,35 +20,47 @@ class Config
     public function __construct($file)
     {
         $this->file = $file;
-        $this->parseConfigFile();
-    }
 
-    /**
-     * Parses the ini file and saves the data
-     */
-    private function parseConfigFile()
-    {
         $this->data = parse_ini_file($this->file, true);
     }
 
     /**
-     * @param $field
-     *
+     * @param $section
+     * @param mixed $field
+     * @return mixed
+     */
+    public function get($section, $field)
+    {
+        return isset($this->data[$section][$field]) ? $this->data[$section][$field] : null;
+    }
+
+    /**
+     * @param mixed $section
+     * @param mixed $field
+     * @param mixed $value
      * @return $this
      */
-    public function __get($field)
+    public function set($section, $field, $value)
     {
-        if (!is_array($this->data[$field])) {
-            $this->section = null;
-            return $this->data[$field];
-        } else {
-            if (is_null($this->section)) {
-                $this->section = $this->data[$field];
-                return $this;
-            }
-            $this->section = $this->section[$this->data[$field]];
-            return $this;
-        }
+        $this->data[$section][$field] = $value;
+
+        return $this;
+    }
+
+    /**
+     * Returns an array of available fields for general use
+     *
+     * @return array
+     */
+    public function getAllFields()
+    {
+        return [
+            // General settings, most of these can be change through the command line
+            'general' => ['download-only', 'parse-only', 'season', 'verbose', 'quick', 'exporter', 'files'],
+            // Exporter-specific settings
+            'stdout' => ['show-summary'],
+            'file' => ['output-dir']
+        ];
     }
 
 }

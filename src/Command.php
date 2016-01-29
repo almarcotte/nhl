@@ -4,9 +4,8 @@ namespace NHL;
 
 use League\CLImate\CLImate;
 use NHL\Exceptions\DownloaderException;
+use NHL\Exceptions\ExporterException;
 use NHL\Exceptions\ParserException;
-use NHL\Exporters\File;
-use NHL\Exporters\StdOut;
 
 /**
  * Class Command
@@ -28,6 +27,9 @@ class Command
 
     /** @var Contracts\Exporter $exporter */
     public $exporter;
+
+    /** @var Config $config */
+    public $config;
 
     /**
      * Command constructor.
@@ -62,23 +64,17 @@ class Command
             $config_file = self::DEFAULT_CONFIG;
         }
 
-        $this->config = new Config($config_file);
-
-
-        $this->downloader = new Downloader($this);
-        if ($this->climate->arguments->defined('season')) {
-            $this->downloader->setSeason($this->climate->arguments->get('season'));
-        }
+        $this->prepareConfig($config_file);
 
         try {
             /**
              * Parsing or Downloading only
              */
-            if ($this->climate->arguments->defined('parse-only')) {
-                $this->parser = new Parser($this, null);
+            if ($this->config->get('general', 'parse-only')) {
+                $this->parser = new Parser($this);
                 $this->parser->parse();
                 exit();
-            } else if ($this->climate->arguments->defined('download-only')) {
+            } else if ($this->config->get('general', 'download-only')) {
                 $this->downloader->download();
                 exit();
             }
@@ -86,12 +82,18 @@ class Command
             /**
              * Otherwise we download and parse
              */
-            $this->parser = new Parser($this, $this->downloader);
+            $this->downloader = new Downloader($this);
+            $this->downloader->download();
+
+            $this->parser = new Parser($this);
+            $this->parser->parse();
 
         } catch (ParserException $e) {
             exit("Parser Error: " . $e->getMessage());
         } catch (DownloaderException $e) {
             exit ("Downloader Error: " . $e->getMessage());
+        } catch (ExporterException $e) {
+            exit ("Exporter Error: " . $e->getMessage());
         }
     }
 
@@ -165,8 +167,9 @@ class Command
      *
      * @param $msg
      */
-    public function out($msg) {
-        if ($this->climate->arguments->defined('verbose')) {
+    public function out($msg)
+    {
+        if ($this->config->get('general', 'verbose')) {
             $this->climate->out($msg);
         }
     }
@@ -210,6 +213,25 @@ class Command
 
         if (!empty($data)) {
             $this->climate->table($data);
+        }
+    }
+
+    /**
+     * Set up the configuration by loading the config file and merging with command line options
+     * @param $file
+     */
+    public function prepareConfig($file)
+    {
+        $this->config = new Config($file);
+
+        $conf = $this->config->getAllFields();
+
+        foreach ($conf as $section => $options) {
+            foreach ($options as $option) {
+                if ($this->climate->arguments->defined($option)) {
+                    $this->config->set($section, $option, $this->climate->arguments->get($option));
+                }
+            }
         }
     }
 
