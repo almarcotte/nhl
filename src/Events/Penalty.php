@@ -86,7 +86,6 @@ class Penalty extends Event
                 'location' => trim($details[3][0])
             ];
         } else {
-            var_dump($this->line);
             return [];
         }
     }

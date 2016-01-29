@@ -19,6 +19,15 @@ class Give extends Event
     /** @var string $eventType */
     public $eventType = Types::GIVE;
 
+    /** @var Team $team */
+    public $team;
+
+    /** @var Player $player */
+    public $player;
+
+    /** @var string $location */
+    public $location;
+
     /**
      * @inheritdoc
      */

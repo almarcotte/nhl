@@ -17,22 +17,24 @@ class FaceOff extends Event
     const DESCRIBE = "[P%s: %s] %s won faceoff in %s - %s vs %s";
 
     /** @var Team $team_won */
-    public $team_won;
+    public $teamWon;
 
     /** @var Team $home_team */
-    public $home_team;
+    public $homeTeam;
 
     /** @var Player $home_player */
-    public $home_player;
+    public $homePlayer;
 
     /** @var Team $away_team */
-    public $away_team;
+    public $awayTeam;
 
     /** @var Player $away_player */
-    public $away_player;
+    public $awayPlayer;
 
     /** @var string $eventType */
     public $eventType = Types::FACEOFF;
+
+    /** @var string $location */
     public $location;
 
     /**
@@ -47,12 +49,12 @@ class FaceOff extends Event
             return false;
         }
 
-        $this->team_won = new Team($data['team_won']);
+        $this->teamWon = new Team($data['team_won']);
         $this->location = $data['location'];
-        $this->home_team = new Team($data['home_team']);
-        $this->away_team = new Team($data['away_team']);
-        $this->home_player = new Player($data['home_number'], $data['home_player'], $this->home_team);
-        $this->away_player = new Player($data['away_number'], $data['away_player'], $this->away_team);
+        $this->homeTeam = new Team($data['home_team']);
+        $this->awayTeam = new Team($data['away_team']);
+        $this->homePlayer = new Player($data['home_number'], $data['home_player'], $this->homeTeam);
+        $this->awayPlayer = new Player($data['away_number'], $data['away_player'], $this->awayTeam);
 
         $this->parsed = true;
         return true;
@@ -85,10 +87,10 @@ class FaceOff extends Event
             return sprintf(self::DESCRIBE,
                 $this->eventPeriod,
                 $this->eventTime,
-                $this->team_won,
+                $this->teamWon,
                 $this->location,
-                $this->home_player,
-                $this->away_player
+                $this->homePlayer,
+                $this->awayPlayer
             );
         }
     }

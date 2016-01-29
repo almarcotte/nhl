@@ -15,17 +15,17 @@ class Hit extends Event
     const REGEX = "/([A-Z]{3}) #(\\d+) ([A-Z\\s\\-\\.]+) HIT ([A-Z]{3}) #(\\d+) ([A-Z\\s\\-\\.]+), ([A-Za-z\\.\\s]+)/";
     const DESCRIBE = "[P%s: %s] %s hit %s in %s";
 
-    /** @var Team $team1 The hitter's team */
-    public $team1;
+    /** @var Team $teamHitting The hitter's team */
+    public $teamHitting;
 
-    /** @var Team $team2 The target's team */
-    public $team2;
+    /** @var Team $teamHit The target's team */
+    public $teamHit;
 
-    /** @var Player $player1 The hitter */
-    public $player1;
+    /** @var Player $playerHitting The hitter */
+    public $playerHitting;
 
-    /** @var Player $player2 The target */
-    public $player2;
+    /** @var Player $playerHit The target */
+    public $playerHit;
 
     /** @var string $location */
     public $location;
@@ -45,10 +45,10 @@ class Hit extends Event
             return false;
         }
 
-        $this->team1 = new Team($data['team1']);
-        $this->player1 = new Player($data['number1'], $data['player1'], $this->team1);
-        $this->team2 = new Team($data['team2']);
-        $this->player2 = new Player($data['number2'], $data['player2'], $this->team2);
+        $this->teamHitting = new Team($data['team1']);
+        $this->playerHitting = new Player($data['number1'], $data['player1'], $this->teamHitting);
+        $this->teamHit = new Team($data['team2']);
+        $this->playerHit = new Player($data['number2'], $data['player2'], $this->teamHit);
         $this->location = $data['location'];
 
         $this->parsed = true;
@@ -86,8 +86,8 @@ class Hit extends Event
             return sprintf(self::DESCRIBE,
                 $this->eventPeriod,
                 $this->eventTime,
-                $this->player1,
-                $this->player2,
+                $this->playerHitting,
+                $this->playerHit,
                 $this->location
             );
         }
