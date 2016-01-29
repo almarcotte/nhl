@@ -19,17 +19,17 @@ class FaceOff extends Event
     /** @var Team $team_won */
     public $teamWon;
 
-    /** @var Team $home_team */
-    public $homeTeam;
+    /** @var Team $firstTeam */
+    public $firstTeam;
 
-    /** @var Player $home_player */
-    public $homePlayer;
+    /** @var Player $firstPlayer */
+    public $firstPlayer;
 
-    /** @var Team $away_team */
-    public $awayTeam;
+    /** @var Team $secondTeam */
+    public $secondTeam;
 
-    /** @var Player $away_player */
-    public $awayPlayer;
+    /** @var Player $secondPlayer */
+    public $secondPlayer;
 
     /** @var string $eventType */
     public $eventType = Types::FACEOFF;
@@ -51,10 +51,10 @@ class FaceOff extends Event
 
         $this->teamWon = new Team($data['team_won']);
         $this->location = $data['location'];
-        $this->homeTeam = new Team($data['home_team']);
-        $this->awayTeam = new Team($data['away_team']);
-        $this->homePlayer = new Player($data['home_number'], $data['home_player'], $this->homeTeam);
-        $this->awayPlayer = new Player($data['away_number'], $data['away_player'], $this->awayTeam);
+        $this->firstTeam = new Team($data['home_team']);
+        $this->secondTeam = new Team($data['away_team']);
+        $this->firstPlayer = new Player($data['home_number'], $data['home_player'], $this->firstTeam);
+        $this->secondPlayer = new Player($data['away_number'], $data['away_player'], $this->secondTeam);
 
         $this->parsed = true;
         return true;
@@ -89,8 +89,8 @@ class FaceOff extends Event
                 $this->eventTime,
                 $this->teamWon,
                 $this->location,
-                $this->homePlayer,
-                $this->awayPlayer
+                $this->firstPlayer,
+                $this->secondPlayer
             );
         }
     }

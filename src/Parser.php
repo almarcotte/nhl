@@ -132,6 +132,7 @@ class Parser
             }
         }
 
+        // Add each event line to the game log
         foreach($lines as $line) {
             if ($event = $this->createParsedEvent($line)) {
                 $game->addEvent($event);

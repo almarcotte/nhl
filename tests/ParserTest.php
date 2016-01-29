@@ -97,10 +97,10 @@ class ParserTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($faceoff->parse());
 
         $this->assertEquals(new \NHL\Entities\Team('MTL'), $faceoff->teamWon);
-        $this->assertEquals(new \NHL\Entities\Team('MTL'), $faceoff->homeTeam);
-        $this->assertEquals(new \NHL\Entities\Team('TOR'), $faceoff->awayTeam);
-        $this->assertEquals(new \NHL\Entities\Player('51', 'DESHARNAIS', new \NHL\Entities\Team('MTL')), $faceoff->homePlayer);
-        $this->assertEquals(new \NHL\Entities\Player('16', 'SPALING', new \NHL\Entities\Team('TOR')), $faceoff->awayPlayer);
+        $this->assertEquals(new \NHL\Entities\Team('MTL'), $faceoff->firstTeam);
+        $this->assertEquals(new \NHL\Entities\Team('TOR'), $faceoff->secondTeam);
+        $this->assertEquals(new \NHL\Entities\Player('51', 'DESHARNAIS', new \NHL\Entities\Team('MTL')), $faceoff->firstPlayer);
+        $this->assertEquals(new \NHL\Entities\Player('16', 'SPALING', new \NHL\Entities\Team('TOR')), $faceoff->secondPlayer);
     }
 
     public function testBlockParsed()

@@ -2,7 +2,6 @@
 
 namespace NHL\Exporters;
 
-use NHL\Command;
 use NHL\Contracts\Exporter;
 use NHL\Contracts\VerboseOutput;
 use NHL\Entities\Game;
