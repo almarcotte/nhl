@@ -3,9 +3,9 @@
 namespace NHL\Exceptions;
 
 /**
- * Class NHLParserException
+ * Class ParserException
  * @package NHL\Exceptions
  */
-class NHLParserException extends \Exception
+class ParserException extends \Exception
 {
 }

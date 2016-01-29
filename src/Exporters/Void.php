@@ -1,28 +1,24 @@
 <?php
+
 namespace NHL\Exporters;
 
 
 use NHL\Contracts\Exporter;
-use NHL\Entities\Game;
 
 /**
- * Class CSV
- * Exports data to a CSV file
+ * Class Void
+ *
+ * This export does nothing.
  *
  * @package NHL\Exporters
  */
-class CSV extends File implements Exporter
+class Void extends StdOut implements Exporter
 {
-
-    /** @var Game $game */
-    private $game;
-
     /**
      * @inheritdoc
      */
     public function export()
     {
-        return true;
     }
 
 }

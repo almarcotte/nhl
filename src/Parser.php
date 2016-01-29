@@ -6,8 +6,8 @@ use League\CLImate\CLImate;
 use NHL\Entities\Game;
 use NHL\Entities\Team;
 use NHL\Events\Types;
-use NHL\Exceptions\NHLParserException;
-use NHL\Exporters\PlainText;
+use NHL\Exceptions\ParserException;
+use NHL\Exporters\File;
 use PHPHtmlParser\Dom;
 use PHPHtmlParser\Dom\AbstractNode;
 use RecursiveDirectoryIterator;
@@ -34,14 +34,13 @@ class Parser
 
     /**
      * Parser constructor.
-     * @param Command $command
-     * @param CLImate $climate
+     *
+     * @param Command    $command
      * @param Downloader $downloader
      */
-    public function __construct(Command $command, CLImate $climate, Downloader $downloader = null)
+    public function __construct(Command $command, Downloader $downloader = null)
     {
         $this->command = $command;
-        $this->climate = $climate;
         $this->downloader = $downloader;
     }
 
@@ -58,18 +57,18 @@ class Parser
     /**
      * Makes sure we have files to parse. If not only parsing, initiate the download
      *
-     * @throws NHLParserException
+     * @throws ParserException
      */
     private function prepareFiles()
     {
         // Not downloading, make sure files exist to parse
         if (is_null($this->downloader)) {
             // Try and parse existing files, no additional downloads
-            if (!$this->climate->arguments->defined('files')) {
-                throw new NHLParserException("Couldn't find setting for downloaded file location.\n");
+            if (!$this->command->climate->arguments->defined('files')) {
+                throw new ParserException("Couldn't find setting for downloaded file location.\n");
             }
-            if (!is_dir($this->climate->arguments->get('files'))) {
-                throw new NHLParserException("The path provided for files isn't a directory.\n");
+            if (!is_dir($this->command->climate->arguments->get('files'))) {
+                throw new ParserException("The path provided for files isn't a directory.\n");
             }
         } else {
             $this->downloader->download();
@@ -80,7 +79,7 @@ class Parser
      * Parses files
      *
      * @return bool
-     * @throws NHLParserException
+     * @throws ParserException
      */
     public function parse()
     {
@@ -89,7 +88,7 @@ class Parser
         $this->prepareFiles();
         $files = $this->getAllFileNames();
 
-        foreach($files as $filename) {
+        foreach ($files as $filename) {
             $game = $this->processFile($filename);
 
             $this->command->out("Exporting...");
@@ -108,7 +107,7 @@ class Parser
      */
     private function processFile($filename)
     {
-        $this->command->out("Processing " . $filename);
+        $this->command->out("Processing ".$filename);
 
         // Create a game object with home/away teams and other info
         $game = $this->createGameWithInfo($filename);
@@ -122,7 +121,7 @@ class Parser
             $lineContent = [];
             $lineCount = 0;
             /** @var AbstractNode $td */
-            foreach($tr->getChildren() as $td) {
+            foreach ($tr->getChildren() as $td) {
                 $value = trim(str_replace('&nbsp;', '@', $td->text)); // clean up the line, adding @ to make parsing a bit easier for certain events
                 if ($value) {
                     $lineCount++;
@@ -137,7 +136,7 @@ class Parser
         }
 
         // Add each event line to the game log
-        foreach($lines as $line) {
+        foreach ($lines as $line) {
             if ($event = $this->createParsedEvent($line)) {
                 $game->addEvent($event);
             }
@@ -148,6 +147,7 @@ class Parser
 
     /**
      * @param $line
+     *
      * @return Event|bool
      */
     private function createParsedEvent($line)
@@ -165,6 +165,7 @@ class Parser
             $event->setTime($line[3]);
 
             $event->parse();
+
             return $event;
         } else {
             return false;
@@ -179,7 +180,7 @@ class Parser
     private function getAllFileNames()
     {
         $directory = new RecursiveDirectoryIterator(
-            $this->climate->arguments->get('files')
+            $this->command->climate->arguments->get('files')
         );
         $iterator = new RecursiveIteratorIterator($directory);
         $regex = new RegexIterator($iterator, '/^.+\.HTM$/i', RecursiveRegexIterator::GET_MATCH);
@@ -215,14 +216,14 @@ class Parser
 
         // Grab the home / away teams and scores
         if (preg_match_all($regex, $v_text, $matches_visitor)) {
-            $away = new Team($matches_visitor[2][0] . $matches_visitor[3][0]);
+            $away = new Team($matches_visitor[2][0].$matches_visitor[3][0]);
             $away_score = $matches_visitor[1][0];
         } else {
             return false;
         }
 
         if (preg_match_all($regex, $h_text, $matches_home)) {
-            $home = new Team($matches_home[2][0] . $matches_home[3][0]);
+            $home = new Team($matches_home[2][0].$matches_home[3][0]);
             $home_score = $matches_home[1][0];
         } else {
             return false;
@@ -230,9 +231,9 @@ class Parser
 
         // Generate the game ID based off of the filename
         $parts = explode('/', $filename);
-        $season = $parts[count($parts)-2];
+        $season = $parts[count($parts) - 2];
         $game_number = str_replace('.HTM', '', end($parts));
-        $game_id = $season . $game_number;
+        $game_id = $season.$game_number;
 
         $game = new Game($game_id);
         $game->setHomeTeam($home);
@@ -241,10 +242,12 @@ class Parser
 
         // Get the attendence, start/end times and location
         /** @var \DOMNode $childNode */
-        foreach($doc->getElementById('GameInfo')->childNodes as $childNode) {
+        foreach ($doc->getElementById('GameInfo')->childNodes as $childNode) {
             $value = trim(preg_replace('!\s+!', ' ', $childNode->textContent));
             $value = preg_replace('/[^a-zA-Z0-9\s\:]/', '', $value);
-            if (mb_strlen($value) <= 2) continue;
+            if (mb_strlen($value) <= 2) {
+                continue;
+            }
 
             if (preg_match("/([A-Za-z]+day [A-Za-z]+ \\d+ \\d+)/", $value, $matches)) {
                 $game->date = $matches[1];
@@ -260,7 +263,7 @@ class Parser
                 $game->wentOverTime = false;
             }
         }
-        
+
         libxml_use_internal_errors(false);
 
         return $game;

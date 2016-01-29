@@ -4,6 +4,12 @@ namespace NHL\Contracts;
 
 use NHL\Command;
 
+/**
+ * Class VerboseOutput
+ * Allows an exporter to display data when verbose output is enabled
+ *
+ * @package NHL\Contracts
+ */
 trait VerboseOutput
 {
 

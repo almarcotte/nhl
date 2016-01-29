@@ -68,11 +68,12 @@ abstract class Event
     }
 
     /**
-     * @param $time
+     * @param string $time
      */
     public function setTime($time)
     {
-        $this->eventTime = $time;
+        $parts = explode(':', $time);
+        $this->eventTime = $parts[0] . ':' . mb_substr($parts[1], 0, 2);
     }
 
     /**

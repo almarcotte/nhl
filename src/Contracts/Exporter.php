@@ -14,6 +14,16 @@ use NHL\Entities\Game;
  */
 interface Exporter
 {
+    /**
+     * Set the game
+     *
+     * @param Game $game
+     * @return Exporter
+     */
     public function setGame(Game $game);
+
+    /**
+     * Export the data
+     */
     public function export();
 }

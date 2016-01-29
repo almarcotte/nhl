@@ -18,13 +18,16 @@ class MySQL implements Exporter
     private $game;
 
     /**
-     * @param Game $game
+     * @inheritdoc
      */
     public function setGame(Game $game)
     {
         $this->game = $game;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function export()
     {
         return true;
