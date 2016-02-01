@@ -18,7 +18,6 @@ class ParserTest extends PHPUnit_Framework_TestCase
      */
     public static function setUpBeforeClass()
     {
-        self::markTestSkipped("Skipping for now");
         self::$climate = new \League\CLImate\CLImate();
         self::$command = new \NHL\Command(self::$climate);
     }

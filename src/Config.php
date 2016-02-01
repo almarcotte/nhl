@@ -11,7 +11,6 @@ class Config
     /** @var array $data */
     private $data;
 
-
     /**
      * Config constructor.
      *
@@ -22,22 +21,37 @@ class Config
         $this->file = $file;
 
         $this->data = parse_ini_file($this->file, true);
+
+        // Merge with 'dependsOn' and explode options that should be arrays
+        foreach($this->data as $section => $options) {
+            if (isset($options['dependsOn'])) {
+                $this->data[$section] = array_merge($this->data[$options['dependsOn']], $this->data[$section]);
+            }
+        }
     }
 
     /**
-     * @param $section
-     * @param mixed $field
+     * @param string $section
+     * @param mixed  $field
+     *
      * @return mixed
      */
-    public function get($section, $field)
+    public function get($section, $field = null)
     {
-        return isset($this->data[$section][$field]) ? $this->data[$section][$field] : null;
+        if (is_null($field) && isset($this->data[$section])) {
+            return $this->data[$section];
+        } else if (isset($this->data[$section][$field])) {
+            return $this->data[$section][$field];
+        }
+
+        return null;
     }
 
     /**
      * @param mixed $section
      * @param mixed $field
      * @param mixed $value
+     *
      * @return $this
      */
     public function set($section, $field, $value)
@@ -58,8 +72,8 @@ class Config
             // General settings, most of these can be change through the command line
             'general' => ['download-only', 'parse-only', 'season', 'verbose', 'quick', 'exporter', 'files'],
             // Exporter-specific settings
-            'stdout' => ['show-summary'],
-            'file' => ['output-dir']
+            'stdout'  => ['show-summary'],
+            'file'    => ['output-dir']
         ];
     }
 

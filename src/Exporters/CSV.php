@@ -3,6 +3,7 @@ namespace NHL\Exporters;
 
 
 use NHL\Contracts\Exporter;
+use NHL\Contracts\WithOptions;
 use NHL\Entities\Game;
 
 /**

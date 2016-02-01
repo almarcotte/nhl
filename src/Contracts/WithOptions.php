@@ -2,6 +2,8 @@
 
 namespace NHL\Contracts;
 
+use NHL\Config;
+
 /**
  * Class WithOptions
  *
@@ -15,6 +17,8 @@ trait WithOptions
     protected $options;
 
     /**
+     * Set the options for the exporter based on Config
+     *
      * @param array $options
      */
     public function setOptions(array $options)
@@ -39,6 +43,15 @@ trait WithOptions
     public function setOption($option, $value)
     {
         $this->options[$option] = $value;
+    }
+
+    /**
+     * @param string $option
+     *
+     * @return mixed
+     */
+    public function getOption($option) {
+        return isset($this->options[$option]) ? $this->options[$option] : null;
     }
 
 }

@@ -31,6 +31,9 @@ class Command
     /** @var Config $config */
     public $config;
 
+    /** @var Parser $parser */
+    public $parser;
+
     /**
      * Command constructor.
      * @param CLImate $climate
@@ -65,7 +68,10 @@ class Command
         }
 
         $this->prepareConfig($config_file);
+    }
 
+    public function run()
+    {
         try {
             /**
              * Parsing or Downloading only
@@ -95,6 +101,7 @@ class Command
         } catch (ExporterException $e) {
             exit ("Exporter Error: " . $e->getMessage());
         }
+
     }
 
     /**

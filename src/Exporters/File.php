@@ -36,10 +36,7 @@ class File implements Exporter
      */
     public function export()
     {
-        if (!isset($this->options['exportPath']) || !is_writable($this->options['exportPath'])) {
-            throw new ExporterException("Can't write to export path set in the options.");
-        }
-
+        if (!$this->hasOption('output'))
         foreach ($this->game->getEvents() as $event) {
             $this->out($event->describe());
         }

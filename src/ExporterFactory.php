@@ -39,11 +39,13 @@ class ExporterFactory
                 break;
             case 'stdout':
             default:
+                $exporter = 'stdout';
                 $obj = new StdOut();
         }
 
-        if (method_exists($obj, 'setCommand')) {
-            $obj->setCommand($command);
+        if (method_exists($obj, 'setOptions')) {
+            $obj->setOptions($command->config->get($exporter));
+            $obj->setOption('path', $command->config->get('export', 'path'));
         }
 
         return $obj;
