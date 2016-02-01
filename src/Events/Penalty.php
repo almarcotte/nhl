@@ -15,7 +15,7 @@ class Penalty extends Event
 {
     const PLAYERS_REGEX = "/([A-Z]{3})(?:\\h{1}#)(\\d{1,2})(?:\\h{1})([A-Z \\-]+)/";
     const DETAILS_REGEX = "/(?:@)([A-Za-z\\h]+)(?:\\((\\d+) min\\))(?:[, ]+)(?:([A-Za-z .]+)Drawn By: )/";
-    const DESCRIBE = "<light_red>[P%s: %s] %s %s minutes for %s in %s drawn by %s</light_red>";
+    const DESCRIBE = "[P%s: %s] %s %s minutes for %s in %s drawn by %s";
 
     /** @var string $duration */
     public $duration;

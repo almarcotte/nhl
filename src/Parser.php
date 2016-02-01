@@ -67,7 +67,9 @@ class Parser
             $game = $this->processFile($filename);
 
             $this->command->out("Exporting...");
-            $this->command->exporter->setGame($game)->export();
+            $this->command->exporter->setGame($game);
+            $this->command->exporter->export();
+            $this->command->out("Done!");
         }
 
         return true;
@@ -212,6 +214,7 @@ class Parser
         $game->setHomeTeam($home);
         $game->setAwayTeam($away);
         $game->setFinalScore($home_score, $away_score);
+        $game->setSeason($season);
 
         // Get the attendence, start/end times and location
         /** @var \DOMNode $childNode */

@@ -15,7 +15,7 @@ class Goal extends Event
 {
     const GOAL_REGEX = "/([A-Z]{3})(?:\\h{1}#)(\\d+)(?:\\h{1})([A-Z\\h-]+)\\(\\d\\),\\h(\\w+),\\h([\\w\\.\\h]+), (\\d+) ft./";
     const ASSIST_REGEX = "/(?:[:|;]) #(\\d+)\\h([A-Z\\h\\-]+)/";
-    const DESCRIBE = "<green>[P%s: %s] Goal (%s) by %s from %s ft. in %s. Assists: %s</green>";
+    const DESCRIBE = "[P%s: %s] Goal (%s) by %s from %s ft. in %s. Assists: %s";
 
     /**
      * @var Player[] $assists

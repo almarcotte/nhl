@@ -18,7 +18,6 @@ interface Exporter
      * Set the game
      *
      * @param Game $game
-     * @return Exporter
      */
     public function setGame(Game $game);
 

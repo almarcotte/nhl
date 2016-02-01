@@ -45,9 +45,6 @@ class Command
         $this->climate->description(self::DESCRIPTION);
         $this->climate->arguments->parse();
 
-        $exporter = $this->climate->arguments->defined('exporter') ? $this->climate->arguments->get('exporter') : 'stdout';
-        $this->exporter = ExporterFactory::make($exporter, $this);
-
         if ($this->climate->arguments->defined('help')) {
             $this->climate->usage();
             exit();
@@ -73,6 +70,10 @@ class Command
     public function run()
     {
         try {
+            $exporter = $this->config->get('export', 'exporter') ? $this->config->get('export', 'exporter') : 'stdout';
+            $this->exporter = ExporterFactory::make($exporter, $this);
+            $this->out("Using Exporter: $exporter");
+
             /**
              * Parsing or Downloading only
              */

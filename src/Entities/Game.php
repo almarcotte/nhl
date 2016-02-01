@@ -43,11 +43,14 @@ class Game
     /** @var string $endTimeZone */
     public $endTimeZone;
 
+    /** @var string $season */
+    public $season;
+
     /** @var Event[] $events */
     private $events;
 
     /** @var string $id Unique identifier for this game based on season and game number */
-    private $id;
+    public $id;
 
     /**
      * Game constructor.
@@ -105,5 +108,13 @@ class Game
     public function getEvents()
     {
         return $this->events;
+    }
+
+    /**
+     * @param string $season
+     */
+    public function setSeason($season)
+    {
+        $this->season = $season;
     }
 }
