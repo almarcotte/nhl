@@ -52,6 +52,9 @@ class Game
     /** @var string $id Unique identifier for this game based on season and game number */
     public $id;
 
+    /** @var string $shortID */
+    public $shortID;
+
     /**
      * Game constructor.
      *
@@ -60,6 +63,7 @@ class Game
     public function __construct($gameID)
     {
         $this->id = $gameID;
+        $this->shortID = mb_strcut($this->id, 11);
     }
 
     /**

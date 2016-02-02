@@ -24,7 +24,7 @@ class File implements Exporter
     protected $path;
 
     /** @var Game $game */
-    private $game;
+    protected $game;
 
     /**
      * @var array
@@ -33,7 +33,8 @@ class File implements Exporter
         '%GAMEID%' => 'id',
         '%SEASON%' => 'season',
         '%HOMETEAM%' => 'home',
-        '%AWAYTEAM' => 'away'
+        '%AWAYTEAM%' => 'away',
+        '%SHORTID%' => 'shortID'
     ];
 
     /**
@@ -64,7 +65,7 @@ class File implements Exporter
             }
         }
 
-        $this->path .= DIRECTORY_SEPARATOR . $this->getFileNameFromTemplate();
+        $this->path .= DIRECTORY_SEPARATOR . $this->getRealPathFromTemplate($this->getOption('nameFormat'));
 
         if ($this->getOption('oneFilePergame') && file_exists($this->path)) {
             unlink($this->path);
@@ -89,11 +90,12 @@ class File implements Exporter
     /**
      * Creates a filename based on the template set in config.ini
      *
+     * @param $template
+     *
      * @return string
      */
-    protected function getFileNameFromTemplate()
+    protected function getRealPathFromTemplate($template)
     {
-        $template = $this->getOption('nameFormat');
         foreach($this->fileNameVariables as $placeholder => $field) {
             $template = str_replace($placeholder, $this->game->{$field}, $template);
         }
