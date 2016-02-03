@@ -13,8 +13,10 @@ use NHL\Event;
  */
 class Penalty extends Event
 {
-    const PLAYERS_REGEX = "/([A-Z]{3})(?:\\h{1}#)(\\d{1,2})(?:\\h{1})([A-Z \\-]+)/";
-    const DETAILS_REGEX = "/(?:@)([A-Za-z\\h]+)(?:\\((\\d+) min\\))(?:[, ]+)(?:([A-Za-z .]+)Drawn By: )/";
+    const REGEX_PENALTY = "/([A-Z\\.]{3}) #(\\d+) ([A-Z\\-\\.\\h]+)@([A-Za-z\\h\\-\\(\\)]+)\\((\\d+) min\\), ([A-Za-z\\.]+ Zone)/";
+    const REGEX_DRAWNBY = "/Drawn By: ([A-Z\\.]{3}) #(\\d+) ([A-Z\\-\\.\\h]+)/";
+    const REGEX_SERVEDBY = "/ Served By: #(\\d+) ([A-Za-z\\-\\.\\h]+)/";
+
     const DESCRIBE = "[P%s: %s] %s %s minutes for %s in %s drawn by %s";
 
     /** @var string $duration */
@@ -41,6 +43,8 @@ class Penalty extends Event
     /** @var string $location */
     public $location;
 
+    public $servedByPlayer;
+
     /**
      * @inheritdoc
      */
@@ -53,10 +57,19 @@ class Penalty extends Event
         }
 
         $this->team = new Team($data['penalty_team']);
-        $this->drawnTeam = new Team($data['drawn_team']);
+
+        if (isset($data['drawn_team'])) {
+            $this->drawnTeam = new Team($data['drawn_team']);
+        }
+        if (isset($data['drawn_number']) && isset($data['drawn_player'])) {
+            $this->drawnPlayer = new Player($data['drawn_number'], $data['drawn_player'], $this->drawnTeam);
+        }
 
         $this->player = new Player($data['penalty_number'], $data['penalty_player'], $this->team);
-        $this->drawnPlayer = new Player($data['drawn_number'], $data['drawn_player'], $this->drawnTeam);
+
+        if (isset($data['servedby_number']) && isset($data['servedby_player'])) {
+            $this->servedByPlayer = new Player($data['servedby_number'], $data['servedby_player'], $this->team);
+        }
 
         $this->infraction = $data['infraction'];
         $this->duration = $data['duration'];
@@ -72,22 +85,39 @@ class Penalty extends Event
      */
     public function toArray()
     {
-        if (preg_match_all(self::PLAYERS_REGEX, $this->line, $players)
-            && preg_match_all(self::DETAILS_REGEX, $this->line, $details)) {
-            return [
-                'penalty_team' => $players[1][0],
-                'penalty_number' => $players[2][0],
-                'penalty_player' => $players[3][0],
-                'drawn_team' => $players[1][1],
-                'drawn_number' => $players[2][1],
-                'drawn_player' => $players[3][1],
-                'infraction' => trim($details[1][0]),
-                'duration' => trim($details[2][0]),
-                'location' => trim($details[3][0])
+        $penalty = [];
+        $line = $this->line;
+
+        // Check if it's served by anybody
+        if (preg_match_all(self::REGEX_SERVEDBY, $line, $sbmatches)) {
+            $penalty += [
+                'servedby_number' => $sbmatches[1][0],
+                'servedby_player' => $sbmatches[2][0]
             ];
-        } else {
-            return [];
+            $line = preg_replace(self::REGEX_SERVEDBY, '', $line);
         }
+
+        if (preg_match_all(self::REGEX_PENALTY, $line, $pmatches)) {
+            $penalty += [
+                'penalty_team' => $pmatches[1][0],
+                'penalty_number' => $pmatches[2][0],
+                'penalty_player' => $pmatches[3][0],
+                'infraction' => trim($pmatches[4][0]),
+                'duration' => trim($pmatches[5][0]),
+                'location' => trim($pmatches[6][0])
+            ];
+        }
+
+        // Check if drawn by anybody
+        if (preg_match_all(self::REGEX_DRAWNBY, $line, $dbmatches)) {
+            $penalty += [
+                'drawn_team' => $dbmatches[1][0],
+                'drawn_number' => $dbmatches[2][0],
+                'drawn_player' => $dbmatches[3][0],
+            ];
+        }
+
+        return $penalty;
     }
 
     /**

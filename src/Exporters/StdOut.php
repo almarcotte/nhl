@@ -41,6 +41,7 @@ class StdOut implements Exporter
     public function export()
     {
         foreach ($this->game->getEvents() as $event) {
+            var_dump($event->line);
             $this->command->climate->out($event->describe());
         }
     }

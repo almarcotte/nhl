@@ -17,7 +17,7 @@ class Shot extends Event
     /**
      * REGEX to match a shot event line
      */
-    const REGEX = "/([A-Z]{3}) ([A-Z]+) - #(\\d+) ([A-Z\\h\\-]+), ([A-Za-z\\h\\-]+), ([A-Za-z\\. ]+), (\\d+) ft./";
+    const REGEX = "/([A-Z\\.]{3}) ([A-Z]+) - #(\\d+) ([A-Z\\h\\-]+), ([A-Za-z\\h\\-]+), ([A-Za-z\\. ]+), (\\d+) ft./";
 
     const DESCRIBE = "[P%s: %s] %s shot %s by %s from %s (%s ft.)";
 

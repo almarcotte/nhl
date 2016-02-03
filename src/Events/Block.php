@@ -13,7 +13,7 @@ use NHL\Event;
 class Block extends Event
 {
 
-    const REGEX = "/([A-Z]{3}) #(\\d+) ([A-Z\\-\\h]+)(?: BLOCKED BY )([A-Z]{3}) #(\\d+) ([A-Z\\-\\h]+), (\\w+), ([\\w+.\\h]+)/";
+    const REGEX = "/([A-Z\\.]{3}) #(\\d+) ([A-Z\\-\\h]+)(?: BLOCKED BY )([A-Z\\.]{3}) #(\\d+) ([A-Z\\-\\h]+), (\\w+), ([\\w+.\\h]+)/";
 
     const DESCRIBE = "[P%s: %s] %s blocked a %s shot from %s in %s";
 

@@ -13,7 +13,7 @@ use NHL\Event;
  */
 class Give extends Event
 {
-    const REGEX = "/([A-Z]{3})@(?:GIVE|TAKE)AWAY - #(\\d+) ([A-Z\\h-]+), ([A-Za-z\\h\\.]+)/";
+    const REGEX = "/([A-Z\\.]{3})@(?:GIVE|TAKE)AWAY - #(\\d+) ([A-Z\\h-]+), ([A-Za-z\\h\\.]+)/";
     const DESCRIBE = "[P%s: %s] Giveaway: %s in %s";
 
     /** @var string $eventType */

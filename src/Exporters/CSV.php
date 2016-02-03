@@ -73,6 +73,9 @@ class CSV extends File implements Exporter
     }
 
     /**
+     * Returns all the important fields of an event object as a comma-separated line.
+     * For certain fields that are arrays (like Assists) they get concatenated by ;
+     *
      * @param Event $event
      *
      * @return string
@@ -83,7 +86,16 @@ class CSV extends File implements Exporter
             return !in_array($field, $this->ignoredColumns);
         }, ARRAY_FILTER_USE_KEY);
 
-        return implode(',', array_values($fields));
+        $columns = [];
+        foreach($fields as $key => $value) {
+            if (is_array($value)) {
+                $columns[] = implode(';', $value);
+            } else {
+                $columns[] = $value;
+            }
+        }
+
+        return implode(',', $columns);
     }
 
 }

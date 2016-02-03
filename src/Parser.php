@@ -177,7 +177,7 @@ class Parser
     private function createGameWithInfo($filename)
     {
         // Another bit of a mess of a regex to match the game score and teams
-        $regex = "/(?:(?:VISITOR|HOME)\\s+)(\\d+)(?:\\s+)([A-Z\\-\\h]+)(?:\\v+)([A-Z\\h\\-]+)Game/";
+        $regex = "/(?:VISITOR|HOME)(\\d+)([A-Z]+)(?:Game)/";
 
         // Temporarily disable xml errors since the file we're parsing is a bit of a mess
         libxml_use_internal_errors(true);
@@ -186,21 +186,23 @@ class Parser
         $doc->loadHTMLFile($filename);
 
         // These contain all the info we need with a whole lot of extra whitespace to remove
-        $v_text = str_replace(' ', '', $doc->getElementById('Visitor')->textContent);
-        $h_text = str_replace(' ', '', $doc->getElementById('Home')->textContent);
+        $v_text = preg_replace("/[^A-Za-z\\d]/", "", $doc->getElementById('Visitor')->textContent);
+        $h_text = preg_replace("/[^A-Za-z\\d]/", "", $doc->getElementById('Home')->textContent);
 
         // Grab the home / away teams and scores
         if (preg_match_all($regex, $v_text, $matches_visitor)) {
-            $away = new Team($matches_visitor[2][0].$matches_visitor[3][0]);
+            $away = new Team($matches_visitor[2][0]);
             $away_score = $matches_visitor[1][0];
         } else {
+            var_dump($v_text); die();
             return false;
         }
 
         if (preg_match_all($regex, $h_text, $matches_home)) {
-            $home = new Team($matches_home[2][0].$matches_home[3][0]);
+            $home = new Team($matches_home[2][0]);
             $home_score = $matches_home[1][0];
         } else {
+            var_dump($h_text); die();
             return false;
         }
 

@@ -48,8 +48,14 @@ Sample output:
     325 [P3: 19:29] TOR won faceoff in Neu. Zone - #14 PLEKANEC (MTL) vs #24 HOLLAND (TOR)
     326 [P3: 20:00] End of Period at 9:56 EDT local time
     327 [P3: 20:00] End of Game at 9:56 EDT local time
-        
+
+## Configuration
+
+Most of the configuration can be done in ``config.ini``.
+
 ## Command line arguments
+
+Below is a list of available command line arguments. Use ``--help`` to display a complete listing.
 
 * ``--download-only``: Download the play by play files without parsing them
 * ``--parse-only``: Parses the files in the path set with ``--files``) if any exist
@@ -57,12 +63,22 @@ Sample output:
 * ``--force``: Download the files even if they are found in the download path (set with ``--files``)
 * ``--quick``: Disable pauses during download (normally the downloader takes a short break every 10 files)
 * ``--verbose``: Will output different notices/messages during the process.
+* ``--list <type>``: Lists all the available implementations for a given type (see ``--list exporters``)
+
+All command line arguments will overwrite the configuration file.
 
 ## Todo
 
-### Writer
+## Parser
+
+* Store the last parsed file somewhere so we have a way to only parse new files. This is useful if the downloader runs daily to grab new game data
+and we want to parse only that day's files.
+
+### Writers
 The next step is to implement the output interface that will allow to write the data to different format (SQL, CSV mostly). I'm looking for a database of every team and roster
 from the past couple of years that I could use to go with this (something similar to Lahman's baseball database), if I can't find anything I might build it myself.
+
+* CSV is partially working. To use, set exporter->export setting in ``config.ini`` to "csv" and run the tool.
 
 ### Command line
 The command line tool needs work.

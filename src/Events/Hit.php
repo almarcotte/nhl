@@ -12,7 +12,7 @@ use NHL\Event;
  */
 class Hit extends Event
 {
-    const REGEX = "/([A-Z]{3}) #(\\d+) ([A-Z\\s\\-\\.]+) HIT ([A-Z]{3}) #(\\d+) ([A-Z\\s\\-\\.]+), ([A-Za-z\\.\\s]+)/";
+    const REGEX = "/([A-Z\\.]{3}) #(\\d+) ([A-Z\\s\\-\\.]+) HIT ([A-Z\\.]{3}) #(\\d+) ([A-Z\\s\\-\\.]+), ([A-Za-z\\.\\s]+)/";
     const DESCRIBE = "[P%s: %s] %s hit %s in %s";
 
     /** @var Team $teamHitting The hitter's team */

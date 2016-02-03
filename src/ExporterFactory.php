@@ -48,6 +48,10 @@ class ExporterFactory
             $obj->setOption('path', $command->config->get('export', 'path'));
         }
 
+        if (method_exists($obj, 'setCommand')) {
+            $obj->setCommand($command);
+        }
+
         return $obj;
     }
 }

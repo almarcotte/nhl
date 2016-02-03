@@ -13,7 +13,7 @@ use NHL\Event;
  */
 class Miss extends Event
 {
-    const REGEX = "/([A-Z]{3}) #(\\d+) ([A-Z\\h\\-]+), ([A-Za-z\\.\\-\\h]+), ([A-Za-z\\.\\-\\h]+), ([A-Za-z\\.\\-\\h]+), (\\d+) ft./";
+    const REGEX = "/([A-Z\\.]{3}) #(\\d+) ([A-Z\\h\\-]+), ([A-Za-z\\.\\-\\h]+), ([A-Za-z\\.\\-\\h]+), ([A-Za-z\\.\\-\\h]+), (\\d+) ft./";
     const DESCRIBE = "[P%s: %s] Missed %s shot by %s from %s (%s)";
 
     /** @var string $eventType */

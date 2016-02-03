@@ -72,13 +72,17 @@ class Downloader
         $season_folder = $this->initSeasonFolder();
 
         $this->downloaded = 0;
-        foreach (range(200, 300) as $game_number) {
+        foreach (range(1, 9999) as $game_number) {
             $file_name = sprintf(self::SOURCE_FORMAT, 'PL', $this->options['subseason'], $game_number);
             $file_local = $season_folder.DIRECTORY_SEPARATOR.$file_name;
             $file_remote = $url.$file_name;
 
             $this->command->out("Downloading from ".$file_remote." to ".$file_local);
-            $this->fetchAndSaveFile($file_remote, $file_local);
+
+            if (!$this->fetchAndSaveFile($file_remote, $file_local)) {
+                $this->command->out("Received 404, all files should be downloaded (or something went wrong)");
+                break;
+            }
 
             if (!$this->command->config->get('general', 'quick') && ($this->downloaded % self::SLEEP_EVERY == 0)) {
                 $sleep_time = self::SLEEP_TIME + rand(1, 10);
@@ -87,7 +91,7 @@ class Downloader
                 $this->command->out("Resuming...");
             }
         }
-        $this->command->out("Downloaded {$this->downloaded} files after trying {$game_number}");
+        $this->command->out("Downloaded {$this->downloaded} new files.");
     }
 
     private function initSeasonFolder()
@@ -103,19 +107,30 @@ class Downloader
     }
 
     /**
+     * Saves a local copy of a remote file. Returns false if the remote file can't be fetched, mostly
+     * if the requests 404s, meaning we've reached the end of data files.
+     *
      * @param string $url
      * @param string $output
+     *
+     * @return bool
      */
     protected function fetchAndSaveFile($url, $output)
     {
         if (file_exists($output) && !$this->command->config->get('general', 'force')) {
             $this->command->out("Skipped because it already exists");
 
-            return;
+            return true;
         }
-        $this->downloaded++;
 
-        file_put_contents($output, fopen($url, 'r'));
+        $remote = @fopen($url, 'r'); // Not pretty, could use curl but it's not always available
+        if ($remote) {
+            file_put_contents($output, $remote);
+            $this->downloaded++;
+            return true;
+        } else {
+            return false;
+        }
     }
 
 }

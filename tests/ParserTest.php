@@ -89,6 +89,24 @@ class ParserTest extends PHPUnit_Framework_TestCase
         );
     }
 
+    public function testOtherGoalParsed()
+    {
+        $line = "NYR #21 STEPAN(1), Tip-In, Off. Zone, 10 ft.Assists: #13 HAYES(1); #20 KREIDER(1)";
+        $goal = new \NHL\Events\Goal($line);
+        $this->assertTrue($goal->parse());
+
+        $this->assertEquals('Tip-In', $goal->shotType);
+        $this->assertEquals('Off. Zone', $goal->location);
+        $this->assertEquals('10', $goal->distance);
+        $this->assertEquals(new \NHL\Entities\Player('21', 'STEPAN', new \NHL\Entities\Team('NYR')), $goal->player);
+        $this->assertEquals([
+            new \NHL\Entities\Player('13', 'HAYES', new \NHL\Entities\Team('NYR')),
+            new \NHL\Entities\Player('20', 'KREIDER', new \NHL\Entities\Team('NYR')),
+        ],
+            $goal->assists
+        );
+    }
+
     public function testFaceOffParsed()
     {
         $line = "MTL won Off. Zone - MTL #51 DESHARNAIS vs TOR #16 SPALING";
@@ -154,6 +172,73 @@ class ParserTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(new \NHL\Entities\Team('MTL'), $penalty->drawnTeam);
         $this->assertEquals('Boarding', $penalty->infraction);
         $this->assertEquals('2', $penalty->duration);
+    }
+
+    /**
+     * During testing with different game files I realised that some penalties had names not previously caught
+     * in the regex. This test checks a few of them and makes sure it gets parsed properly
+     */
+    public function testStrangePenaltyParsed()
+    {
+        $first = new \NHL\Events\Penalty("S.J #4 DILLON@Hi-sticking(2 min), Def. Zone Drawn By: L.A #10 EHRHOFF");
+        $this->assertTrue($first->parse());
+        $this->assertEquals('Def. Zone', $first->location);
+        $this->assertEquals(new \NHL\Entities\Player('4', 'DILLON', new \NHL\Entities\Team('S.J')), $first->player);
+        $this->assertEquals(new \NHL\Entities\Player('10', 'EHRHOFF', new \NHL\Entities\Team('L.A')), $first->drawnPlayer);
+        $this->assertEquals(new \NHL\Entities\Team('S.J'), $first->team);
+        $this->assertEquals(new \NHL\Entities\Team('L.A'), $first->drawnTeam);
+        $this->assertEquals('Hi-sticking', $first->infraction);
+        $this->assertEquals('2', $first->duration);
+
+        // Penalty not drawn by anybody
+        $second = new \NHL\Events\Penalty("L.A #21 SHORE@Closing hand on puck(2 min), Def. Zone");
+        $this->assertTrue($second->parse());
+        $this->assertEquals('Def. Zone', $second->location);
+        $this->assertEquals(new \NHL\Entities\Player('21', 'SHORE', new \NHL\Entities\Team('L.A')), $second->player);
+        $this->assertEquals(new \NHL\Entities\Team('L.A'), $second->team);
+        $this->assertEquals('Closing hand on puck', $second->infraction);
+        $this->assertEquals('2', $second->duration);
+        $this->assertNull($second->drawnPlayer);
+        $this->assertNull($second->drawnTeam);
+
+        // Major penalty
+        $third = new \NHL\Events\Penalty("S.J #89 GOODROW@Fighting (maj)(5 min), Off. Zone Drawn By: L.A #15 ANDREOFF");
+        $this->assertTrue($third->parse());
+        $this->assertEquals('Off. Zone', $third->location);
+        $this->assertEquals(new \NHL\Entities\Player('89', 'GOODROW', new \NHL\Entities\Team('S.J')), $third->player);
+        $this->assertEquals(new \NHL\Entities\Player('15', 'ANDREOFF', new \NHL\Entities\Team('L.A')), $third->drawnPlayer);
+        $this->assertEquals(new \NHL\Entities\Team('S.J'), $third->team);
+        $this->assertEquals(new \NHL\Entities\Team('L.A'), $third->drawnTeam);
+        $this->assertEquals('Fighting (maj)', $third->infraction);
+        $this->assertEquals('5', $third->duration);
+    }
+
+    /**
+     * Some penalties are served by another player. Make sure this is handled properly
+     */
+    public function testServedByPenalty()
+    {
+        $first = new \NHL\Events\Penalty("L.A #2 GREENE@Interference(2 min) Served By: #21 SHORE, Def. Zone Drawn By: S.J #89 GOODROW");
+        $this->assertTrue($first->parse());
+        $this->assertEquals('Def. Zone', $first->location);
+        $this->assertEquals(new \NHL\Entities\Player('2', 'GREENE', new \NHL\Entities\Team('L.A')), $first->player);
+        $this->assertEquals(new \NHL\Entities\Player('89', 'GOODROW', new \NHL\Entities\Team('S.J')), $first->drawnPlayer);
+        $this->assertEquals(new \NHL\Entities\Team('L.A'), $first->team);
+        $this->assertEquals(new \NHL\Entities\Team('S.J'), $first->drawnTeam);
+        $this->assertEquals(new \NHL\Entities\Player('21', 'SHORE', new \NHL\Entities\Team('L.A')), $first->servedByPlayer);
+        $this->assertEquals('Interference', $first->infraction);
+        $this->assertEquals('2', $first->duration);
+
+        $second = new \NHL\Events\Penalty("L.A #17 LUCIC@Match penalty(10 min) Served By: #21 SHORE, Neu. Zone Drawn By: S.J #39 COUTURE");
+        $this->assertTrue($second->parse());
+        $this->assertEquals('Neu. Zone', $second->location);
+        $this->assertEquals(new \NHL\Entities\Player('17', 'LUCIC', new \NHL\Entities\Team('L.A')), $second->player);
+        $this->assertEquals(new \NHL\Entities\Player('39', 'COUTURE', new \NHL\Entities\Team('S.J')), $second->drawnPlayer);
+        $this->assertEquals(new \NHL\Entities\Team('L.A'), $second->team);
+        $this->assertEquals(new \NHL\Entities\Team('S.J'), $second->drawnTeam);
+        $this->assertEquals(new \NHL\Entities\Player('21', 'SHORE', new \NHL\Entities\Team('L.A')), $second->servedByPlayer);
+        $this->assertEquals('Match penalty', $second->infraction);
+        $this->assertEquals('10', $second->duration);
     }
 
     public function testPeriodEndParsed()

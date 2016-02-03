@@ -13,7 +13,7 @@ use NHL\Event;
 class FaceOff extends Event
 {
 
-    const REGEX = "/([[:upper:]]+) won ([A-Za-z\\.\\s]+) - ([[:upper:]]+) #(\\d+) ([[:upper:]\\s]+) vs ([[:upper:]]+) #(\\d+) ([[:upper:]\\s]+)/i";
+    const REGEX = "/([A-Z\\.]{3}) won ([A-Za-z\\.\\s]+) - ([A-Z\\.]{3}) #(\\d+) ([[:upper:]\\s]+) vs ([A-Z\\.]{3}) #(\\d+) ([[:upper:]\\s]+)/i";
     const DESCRIBE = "[P%s: %s] %s won faceoff in %s - %s vs %s";
 
     /** @var Team $team_won */
