@@ -82,6 +82,7 @@ class Command
                 $this->parser->parse();
                 exit();
             } else if ($this->config->get('general', 'download-only')) {
+                $this->downloader = new Downloader($this);
                 $this->downloader->download();
                 exit();
             }

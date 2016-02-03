@@ -65,14 +65,14 @@ class Downloader
         /** @var string $url http://.../SEASON/ */
         $url = sprintf(self::SOURCE_BASE, $this->options['season']);
 
-        if (!is_writable($this->command->config->get('paths', 'files'))) {
+        if (!is_writable($this->command->config->get('general', 'files'))) {
             throw new DownloaderException("The specified folder is not writable\n");
         }
 
         $season_folder = $this->initSeasonFolder();
 
         $this->downloaded = 0;
-        foreach (range(1, 100) as $game_number) {
+        foreach (range(200, 300) as $game_number) {
             $file_name = sprintf(self::SOURCE_FORMAT, 'PL', $this->options['subseason'], $game_number);
             $file_local = $season_folder.DIRECTORY_SEPARATOR.$file_name;
             $file_remote = $url.$file_name;
@@ -80,9 +80,10 @@ class Downloader
             $this->command->out("Downloading from ".$file_remote." to ".$file_local);
             $this->fetchAndSaveFile($file_remote, $file_local);
 
-            if (!$this->command->climate->arguments->defined('quick') && ($this->downloaded % self::SLEEP_EVERY == 0)) {
-                $this->command->out("Sleeping for ".self::SLEEP_TIME." seconds...");
-                sleep(self::SLEEP_TIME);
+            if (!$this->command->config->get('general', 'quick') && ($this->downloaded % self::SLEEP_EVERY == 0)) {
+                $sleep_time = self::SLEEP_TIME + rand(1, 10);
+                $this->command->out("Sleeping for ".$sleep_time." seconds...");
+                sleep($sleep_time);
                 $this->command->out("Resuming...");
             }
         }
@@ -107,7 +108,7 @@ class Downloader
      */
     protected function fetchAndSaveFile($url, $output)
     {
-        if (file_exists($output) && !$this->command->climate->arguments->defined('force')) {
+        if (file_exists($output) && !$this->command->config->get('general', 'force')) {
             $this->command->out("Skipped because it already exists");
 
             return;
