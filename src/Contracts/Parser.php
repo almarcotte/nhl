@@ -21,6 +21,12 @@ abstract class Parser
     /** @var Command $command */
     protected $command;
 
+    /** @var string $filePattern */
+    protected $filePattern = null;
+
+    /** @var string $name */
+    public $name = "Abstract";
+
     /**
      * Parser constructor.
      *
@@ -47,30 +53,7 @@ abstract class Parser
         }
     }
 
-    /**
-     * Parses files
-     *
-     * @return bool
-     * @throws ParserException
-     */
-    public function parse()
-    {
-        ini_set('memory_limit', -1); // uh oh
-
-        $this->prepareFiles();
-        $files = $this->getAllFileNames();
-
-        foreach ($files as $filename) {
-            $game = $this->processFile($filename);
-
-            $this->command->out("Exporting...");
-            $this->command->exporter->setGame($game);
-            $this->command->exporter->export();
-            $this->command->out("Done!");
-        }
-
-        return true;
-    }
+    public abstract function parse();
 
     /**
      * Parses the given file and returns a Game object
@@ -84,11 +67,11 @@ abstract class Parser
      *
      * @return array
      */
-    private function getAllFileNames()
+    protected function getAllFileNames()
     {
         $directory = new RecursiveDirectoryIterator($this->command->config->get('general', 'files'));
         $iterator = new RecursiveIteratorIterator($directory);
-        $regex = new RegexIterator($iterator, '/^.+\.HTM$/i', RecursiveRegexIterator::GET_MATCH);
+        $regex = new RegexIterator($iterator, $this->filePattern, RecursiveRegexIterator::GET_MATCH);
 
         $files = array_keys(iterator_to_array($regex));
 

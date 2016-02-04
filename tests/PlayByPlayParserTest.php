@@ -1,5 +1,6 @@
 <?php
 
+use NHL\Contracts\Parser;
 use NHL\Events\Types;
 use NHL\Parsers\PlayByPlay;
 
@@ -52,6 +53,14 @@ class ParserTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('Wide of Net', $shot->target);
         $this->assertEquals('Off. Zone', $shot->location);
         $this->assertEquals('19', $shot->distance);
+        $this->assertTrue($shot->isPenaltyShot);
+
+        // Another penalty shot with a different format
+        $shot = new \NHL\Events\Shot("PHI ONGOAL - #21 LAUGHTON, Penalty Shot, Backhand, Off. Zone, 15 ft.");
+        $this->assertEquals('Backhand', $shot->shotType);
+        $this->assertEquals('ONGOAL', $shot->target);
+        $this->assertEquals('Off. Zone', $shot->location);
+        $this->assertEquals('15', $shot->distance);
         $this->assertTrue($shot->isPenaltyShot);
     }
 

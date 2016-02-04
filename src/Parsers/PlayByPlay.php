@@ -7,6 +7,7 @@ use NHL\Entities\Team;
 use NHL\Event;
 use NHL\Events\Types;
 use NHL\Contracts\Parser;
+use NHL\Exceptions\ParserException;
 use PHPHtmlParser\Dom;
 use PHPHtmlParser\Dom\AbstractNode;
 
@@ -17,6 +18,34 @@ use PHPHtmlParser\Dom\AbstractNode;
  */
 class PlayByPlay extends Parser
 {
+    protected $filePattern = "/PL.+\\.HTM/";
+
+    /** @var string $name */
+    public $name = "Play By Play";
+
+    /**
+     * Parses files
+     *
+     * @return bool
+     * @throws ParserException
+     */
+    public function parse()
+    {
+        ini_set('memory_limit', -1);
+
+        $this->prepareFiles();
+        $files = $this->getAllFileNames();
+        foreach ($files as $filename) {
+            $game = $this->processFile($filename);
+
+            $this->command->out("Exporting...");
+            $this->command->exporter->setGame($game);
+            $this->command->exporter->export();
+            $this->command->out("Done!");
+        }
+
+        return true;
+    }
 
     /**
      * Parses the given file and returns a Game object

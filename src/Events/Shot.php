@@ -16,6 +16,7 @@ class Shot extends Event
 {
     const REGEX = "/".Team::RX." ([A-Z]+) - ".Player::RX_NO_TEAM.", ([A-Za-z\\h\\-]+), ([A-Za-z\\. ]+), (\\d+) ft./";
     const REGEX_PENALTYSHOT = "/".Player::RX_WITH_TEAM.", (Penalty) Shot, ([A-Za-z\\h\\-\\.]+), ([A-Za-z\\h\\-\\.]+), ([A-Za-z\\h\\-\\.]+), (\\d+) ft./";
+    const REGEX_PENALTYONGOAL = "/".Team::RX." ([A-Z]+) - ".Player::RX_NO_TEAM.", (Penalty) Shot, ([A-Za-z\\h\\-]+), ([A-Za-z\\h\\-\\.]+), (\\d+) ft./";
 
     const DESCRIBE = "[P%s: %s] %s shot %s by %s from %s (%s ft.)";
 
@@ -50,7 +51,6 @@ class Shot extends Event
      */
     public function parse()
     {
-        // TOR ONGOAL - #21 VAN RIEMSDYK, Wrist, Off. Zone, 46 ft.
         $data = $this->toArray();
         if (empty($data)) {
             $this->parsed = false;
@@ -95,6 +95,17 @@ class Shot extends Event
                 'player'    => $matches[3][0],
                 'type'      => $matches[5][0],
                 'target'    => $matches[6][0],
+                'location'  => $matches[7][0],
+                'distance'  => $matches[8][0],
+                'isPenalty' => true
+            ];
+        } else if (preg_match_all(self::REGEX_PENALTYONGOAL, $this->line, $matches)) {
+            return [
+                'team'      => $matches[1][0],
+                'target'    => $matches[2][0],
+                'number'    => $matches[3][0],
+                'player'    => $matches[4][0],
+                'type'      => $matches[6][0],
                 'location'  => $matches[7][0],
                 'distance'  => $matches[8][0],
                 'isPenalty' => true

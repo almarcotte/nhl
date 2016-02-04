@@ -77,16 +77,20 @@ class Command
             $this->exporter = ExporterFactory::make($exporter, $this);
             $this->out("Using Exporter: $exporter");
 
-            if ($this->config->get('general', 'download')) {
+            if ($this->config->get('download', 'download')) {
                 $this->out("Starting Downloader");
                 $this->downloader = new Downloader($this);
                 $this->downloader->download();
             }
 
-            if ($this->config->get('general', 'parse')) {
-                $this->out("Starting Parser");
-                $this->parser = ParserFactory::make('playbyplay', $this);
-                $this->parser->parse();
+            if ($this->config->get('parse', 'parse')) {
+                $parsers = $this->config->get('parse', 'filetypes') ? $this->config->get('parse', 'filetypes') : 'PL';
+                $parsers = explode(',', $parsers);
+                foreach($parsers as $parser) {
+                    $this->parser = ParserFactory::make($parser, $this);
+                    $this->out("Starting Parser: " . $this->parser->name);
+                    $this->parser->parse();
+                }
             }
         } catch (ParserException $e) {
             exit("Parser Error: ".$e->getMessage());
