@@ -70,10 +70,16 @@ class Config
     {
         return [
             // General settings, most of these can be change through the command line
-            'general' => ['download-only', 'parse-only', 'season', 'verbose', 'quick', 'exporter', 'files'],
+            'general'  => ['season', 'verbose', 'files'],
+
+            // Downloader and Parser specific settings
+            'download' => ['download', 'filetypes', 'quick'],
+            'parse'    => ['parse', 'filetypes'],
+
             // Exporter-specific settings
-            'stdout'  => ['show-summary'],
-            'file'    => ['output-dir']
+            'stdout'   => ['show-summary'],
+            'file'     => ['output-dir', 'oneFilePerGame', 'bySeason', 'nameFormat'],
+            'csv'      => ['folderStructure', 'nameFormat', 'ignoreColumns', 'groupMode']
         ];
     }
 

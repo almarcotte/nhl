@@ -3,9 +3,12 @@
 namespace NHL;
 
 use League\CLImate\CLImate;
+use NHL\Contracts\Parser;
 use NHL\Exceptions\DownloaderException;
 use NHL\Exceptions\ExporterException;
 use NHL\Exceptions\ParserException;
+use NHL\Factories\ExporterFactory;
+use NHL\Factories\ParserFactory;
 
 /**
  * Class Command
@@ -82,7 +85,7 @@ class Command
 
             if ($this->config->get('general', 'parse')) {
                 $this->out("Starting Parser");
-                $this->parser = new Parser($this);
+                $this->parser = ParserFactory::make('playbyplay', $this);
                 $this->parser->parse();
             }
         } catch (ParserException $e) {

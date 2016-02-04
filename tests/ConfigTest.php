@@ -1,4 +1,5 @@
 <?php
+use NHL\Factories\ExporterFactory;
 
 /**
  * Class ConfigTest
@@ -50,7 +51,8 @@ class ConfigTest extends PHPUnit_Framework_TestCase
 
     public function testFileExporterConfig()
     {
-        $fileExporter = \NHL\ExporterFactory::make('file', self::$command);
+        /** @var \NHL\Exporters\File $fileExporter */
+        $fileExporter = ExporterFactory::make('file', self::$command);
 
         foreach(['path', 'oneFilePerGame', 'bySeason', 'nameFormat'] as $option) {
             $this->assertTrue($fileExporter->hasOption($option));
@@ -59,7 +61,8 @@ class ConfigTest extends PHPUnit_Framework_TestCase
 
     public function testExporterConfigWithDependency()
     {
-        $csvExporter = \NHL\ExporterFactory::make('csv', self::$command);
+        /** @var \NHL\Exporters\CSV $csvExporter */
+        $csvExporter = ExporterFactory::make('csv', self::$command);
 
         $this->assertEquals(1, $csvExporter->getOption('bySeason'));
         $this->assertEquals('csv', $csvExporter->getOption('extension')); // Should be CSV, not null

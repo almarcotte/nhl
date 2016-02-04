@@ -1,7 +1,8 @@
 <?php
 
-namespace NHL;
+namespace NHL\Factories;
 
+use NHL\Command;
 use NHL\Contracts\Exporter;
 use NHL\Exporters\CSV;
 use NHL\Exporters\File;

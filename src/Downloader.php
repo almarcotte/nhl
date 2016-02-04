@@ -17,8 +17,8 @@ class Downloader
     protected $file_types = [
         'PL', // Play by Play data
         'RO', // Roster
-        'TH',
-        'TV'
+        'TH', // Time on ice report for home team
+        'TV' // Time on ice report for away team
     ];
 
     /** htmlreports/20152016/PL0200001.HTML */
@@ -59,9 +59,17 @@ class Downloader
 
     /**
      * Actually download the files
+     *
+     * @param string $file_type
+     *
+     * @throws DownloaderException
      */
-    public function download()
+    public function download($file_type = 'PL')
     {
+        if (in_array($file_type, $this->file_types)) {
+            throw new DownloaderException("Invalid file type: $file_type");
+        }
+
         /** @var string $url http://.../SEASON/ */
         $url = sprintf(self::SOURCE_BASE, $this->options['season']);
 
@@ -73,7 +81,7 @@ class Downloader
 
         $this->downloaded = 0;
         foreach (range(1, 9999) as $game_number) {
-            $file_name = sprintf(self::SOURCE_FORMAT, 'PL', $this->options['subseason'], $game_number);
+            $file_name = sprintf(self::SOURCE_FORMAT, $file_type, $this->options['subseason'], $game_number);
             $file_local = $season_folder.DIRECTORY_SEPARATOR.$file_name;
             $file_remote = $url.$file_name;
 
