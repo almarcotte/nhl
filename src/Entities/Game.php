@@ -2,9 +2,13 @@
 
 namespace NHL\Entities;
 
-
 use NHL\Event;
 
+/**
+ * Class Game
+ *
+ * @package NHL\Entities
+ */
 class Game
 {
     /** @var Team $home */

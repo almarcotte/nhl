@@ -29,8 +29,7 @@ class ParserTest extends PHPUnit_Framework_TestCase
 
     public function testParseShot()
     {
-        $line = "TOR ONGOAL - #21 VAN RIEMSDYK, Wrist, Off. Zone, 46 ft.";
-        $shot = new \NHL\Events\Shot($line);
+        $shot = new \NHL\Events\Shot("TOR ONGOAL - #21 VAN RIEMSDYK, Wrist, Off. Zone, 46 ft.");
         $this->assertTrue($shot->parse());
 
         $this->assertEquals(new \NHL\Entities\Team('TOR'), $shot->team);
@@ -40,12 +39,24 @@ class ParserTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('ONGOAL', $shot->target);
         $this->assertEquals('Off. Zone', $shot->location);
         $this->assertEquals('46', $shot->distance);
+        $this->assertFalse($shot->isPenaltyShot);
+    }
+
+    public function testPenaltyShotParsed()
+    {
+        $shot = new \NHL\Events\Shot("PHI #28 GIROUX, Penalty Shot, Wrist, Wide of Net, Off. Zone, 19 ft.");
+        $this->assertTrue($shot->parse());
+
+        $this->assertEquals('Wrist', $shot->shotType);
+        $this->assertEquals('Wide of Net', $shot->target);
+        $this->assertEquals('Off. Zone', $shot->location);
+        $this->assertEquals('19', $shot->distance);
+        $this->assertTrue($shot->isPenaltyShot);
     }
 
     public function testParseMiss()
     {
-        $line = "MTL #74 EMELIN, Wrist, Wide of Net, Off. Zone, 62 ft.";
-        $miss = new \NHL\Events\Miss($line);
+        $miss = new \NHL\Events\Miss("MTL #74 EMELIN, Wrist, Wide of Net, Off. Zone, 62 ft.");
         $this->assertTrue($miss->parse());
 
         $this->assertEquals(new \NHL\Entities\Team('MTL'), $miss->team);
@@ -59,8 +70,7 @@ class ParserTest extends PHPUnit_Framework_TestCase
 
     public function testParseHit()
     {
-        $line = "MTL #79 MARKOV HIT TOR #15 PARENTEAU, Def. Zone";
-        $hit = new \NHL\Events\Hit($line);
+        $hit = new \NHL\Events\Hit("MTL #79 MARKOV HIT TOR #15 PARENTEAU, Def. Zone");
         $this->assertTrue($hit->parse());
 
         $this->assertEquals(new \NHL\Entities\Team('MTL'), $hit->teamHitting);
@@ -73,8 +83,7 @@ class ParserTest extends PHPUnit_Framework_TestCase
 
     public function testGoalParsed()
     {
-        $line = "TOR #21 VAN RIEMSDYK(1), Deflected, Def. Zone, 163 ft.Assists: #43 KADRI(1); #3 PHANEUF(1)";
-        $goal = new \NHL\Events\Goal($line);
+        $goal = new \NHL\Events\Goal("TOR #21 VAN RIEMSDYK(1), Deflected, Def. Zone, 163 ft.Assists: #43 KADRI(1); #3 PHANEUF(1)");
         $this->assertTrue($goal->parse());
 
         $this->assertEquals('Deflected', $goal->shotType);
@@ -91,8 +100,7 @@ class ParserTest extends PHPUnit_Framework_TestCase
 
     public function testOtherGoalParsed()
     {
-        $line = "NYR #21 STEPAN(1), Tip-In, Off. Zone, 10 ft.Assists: #13 HAYES(1); #20 KREIDER(1)";
-        $goal = new \NHL\Events\Goal($line);
+        $goal = new \NHL\Events\Goal("NYR #21 STEPAN(1), Tip-In, Off. Zone, 10 ft.Assists: #13 HAYES(1); #20 KREIDER(1)");
         $this->assertTrue($goal->parse());
 
         $this->assertEquals('Tip-In', $goal->shotType);
@@ -109,9 +117,7 @@ class ParserTest extends PHPUnit_Framework_TestCase
 
     public function testFaceOffParsed()
     {
-        $line = "MTL won Off. Zone - MTL #51 DESHARNAIS vs TOR #16 SPALING";
-        $faceoff = new \NHL\Events\FaceOff($line);
-
+        $faceoff = new \NHL\Events\FaceOff("MTL won Off. Zone - MTL #51 DESHARNAIS vs TOR #16 SPALING");
         $this->assertTrue($faceoff->parse());
 
         $this->assertEquals(new \NHL\Entities\Team('MTL'), $faceoff->teamWon);
@@ -123,8 +129,7 @@ class ParserTest extends PHPUnit_Framework_TestCase
 
     public function testBlockParsed()
     {
-        $line = "MTL #15 FLEISCHMANN BLOCKED BY TOR #36 HARRINGTON, Wrist, Def. Zone";
-        $block = new \NHL\Events\Block($line);
+        $block = new \NHL\Events\Block("MTL #15 FLEISCHMANN BLOCKED BY TOR #36 HARRINGTON, Wrist, Def. Zone");
         $this->assertTrue($block->parse());
 
         $this->assertEquals(new \NHL\Entities\Team('TOR'), $block->teamBlocking);
@@ -137,10 +142,8 @@ class ParserTest extends PHPUnit_Framework_TestCase
 
     public function testGiveParsed()
     {
-        $line = "MTL@GIVEAWAY - #81 ELLER, Def. Zone";
-        $give = new \NHL\Events\Give($line);
+        $give = new \NHL\Events\Give("MTL@GIVEAWAY - #81 ELLER, Def. Zone");
         $this->assertTrue($give->parse());
-
 
         $this->assertEquals(new \NHL\Entities\Player('81', 'ELLER', new \NHL\Entities\Team('MTL')), $give->player);
         $this->assertEquals(new \NHL\Entities\Team('MTL'), $give->team);
@@ -149,10 +152,8 @@ class ParserTest extends PHPUnit_Framework_TestCase
 
     public function testTakeParsed()
     {
-        $line = "MTL@TAKEAWAY - #81 ELLER, Def. Zone";
-        $give = new \NHL\Events\Take($line);
+        $give = new \NHL\Events\Take("MTL@TAKEAWAY - #81 ELLER, Def. Zone");
         $this->assertTrue($give->parse());
-
 
         $this->assertEquals(new \NHL\Entities\Player('81', 'ELLER', new \NHL\Entities\Team('MTL')), $give->player);
         $this->assertEquals(new \NHL\Entities\Team('MTL'), $give->team);
@@ -161,8 +162,7 @@ class ParserTest extends PHPUnit_Framework_TestCase
 
     public function testPenaltyParsed()
     {
-        $line = "TOR #47 KOMAROV@Boarding(2 min), Off. Zone Drawn By: MTL #76 SUBBAN";
-        $penalty = new \NHL\Events\Penalty($line);
+        $penalty = new \NHL\Events\Penalty("TOR #47 KOMAROV@Boarding(2 min), Off. Zone Drawn By: MTL #76 SUBBAN");
         $this->assertTrue($penalty->parse());
 
         $this->assertEquals('Off. Zone', $penalty->location);
@@ -172,6 +172,7 @@ class ParserTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(new \NHL\Entities\Team('MTL'), $penalty->drawnTeam);
         $this->assertEquals('Boarding', $penalty->infraction);
         $this->assertEquals('2', $penalty->duration);
+        $this->assertFalse($penalty->ledToPenaltyShot);
     }
 
     /**
@@ -189,6 +190,7 @@ class ParserTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(new \NHL\Entities\Team('L.A'), $first->drawnTeam);
         $this->assertEquals('Hi-sticking', $first->infraction);
         $this->assertEquals('2', $first->duration);
+        $this->assertFalse($first->ledToPenaltyShot);
 
         // Penalty not drawn by anybody
         $second = new \NHL\Events\Penalty("L.A #21 SHORE@Closing hand on puck(2 min), Def. Zone");
@@ -200,6 +202,7 @@ class ParserTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('2', $second->duration);
         $this->assertNull($second->drawnPlayer);
         $this->assertNull($second->drawnTeam);
+        $this->assertFalse($second->ledToPenaltyShot);
 
         // Major penalty
         $third = new \NHL\Events\Penalty("S.J #89 GOODROW@Fighting (maj)(5 min), Off. Zone Drawn By: L.A #15 ANDREOFF");
@@ -211,6 +214,19 @@ class ParserTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(new \NHL\Entities\Team('L.A'), $third->drawnTeam);
         $this->assertEquals('Fighting (maj)', $third->infraction);
         $this->assertEquals('5', $third->duration);
+        $this->assertFalse($third->ledToPenaltyShot);
+
+        // Penalty leading to penalty shot
+        $fourth = new \NHL\Events\Penalty("T.B #18 PALAT@PS-Hooking on breakaway(0 min) Drawn By: PHI #28 GIROUX");
+        $this->assertTrue($fourth->parse());
+        $this->assertNull($fourth->location); // Location not provided for this
+        $this->assertEquals(new \NHL\Entities\Player('18', 'PALAT', new \NHL\Entities\Team('T.B')), $fourth->player);
+        $this->assertEquals(new \NHL\Entities\Player('28', 'GIROUX', new \NHL\Entities\Team('PHI')), $fourth->drawnPlayer);
+        $this->assertEquals(new \NHL\Entities\Team('T.B'), $fourth->team);
+        $this->assertEquals(new \NHL\Entities\Team('PHI'), $fourth->drawnTeam);
+        $this->assertEquals('Hooking on breakaway', $fourth->infraction);
+        $this->assertEquals('0', $fourth->duration);
+        $this->assertTrue($fourth->ledToPenaltyShot);
     }
 
     /**
@@ -243,8 +259,7 @@ class ParserTest extends PHPUnit_Framework_TestCase
 
     public function testPeriodEndParsed()
     {
-        $line = "Period End- Local time: 8:00 EDT";
-        $period = new \NHL\Events\Period($line);
+        $period = new \NHL\Events\Period("Period End- Local time: 8:00 EDT");
         $this->assertTrue($period->parse());
 
         $this->assertEquals(Types::PERIODEND, $period->eventType);
@@ -254,8 +269,7 @@ class ParserTest extends PHPUnit_Framework_TestCase
 
     public function testPeriodStartParsed()
     {
-        $line = "Period Start- Local time: 8:19 EDT";
-        $period = new \NHL\Events\Period($line);
+        $period = new \NHL\Events\Period("Period Start- Local time: 8:19 EDT");
         $this->assertTrue($period->parse());
 
         $this->assertEquals(Types::PERIODSTART, $period->eventType);
@@ -265,8 +279,7 @@ class ParserTest extends PHPUnit_Framework_TestCase
 
     public function testGameEndParsed()
     {
-        $line = "Game End- Local time: 9:56 EDT";
-        $period = new \NHL\Events\Period($line);
+        $period = new \NHL\Events\Period("Game End- Local time: 9:56 EDT");
         $this->assertTrue($period->parse());
 
         $this->assertEquals(Types::GAMEEND, $period->eventType);
@@ -276,8 +289,7 @@ class ParserTest extends PHPUnit_Framework_TestCase
 
     public function testStopParsed()
     {
-        $line = "OFFSIDE";
-        $stop = new \NHL\Events\Stop($line);
+        $stop = new \NHL\Events\Stop("OFFSIDE");
         $this->assertTrue($stop->parse());
 
         $this->assertEquals('OFFSIDE', $stop->reason);
@@ -286,8 +298,7 @@ class ParserTest extends PHPUnit_Framework_TestCase
 
     public function testStopWithOtherReason()
     {
-        $line = "PUCK IN BENCHES,TV TIMEOUT";
-        $stop = new \NHL\Events\Stop($line);
+        $stop = new \NHL\Events\Stop("PUCK IN BENCHES,TV TIMEOUT");
         $this->assertTrue($stop->parse());
 
         $this->assertEquals('PUCK IN BENCHES', $stop->reason);

@@ -13,7 +13,8 @@ use NHL\Event;
  */
 class Penalty extends Event
 {
-    const REGEX_PENALTY = "/".Player::RX_WITH_TEAM."@([A-Za-z\\h\\-\\(\\)]+)\\((\\d+) min\\), ([A-Za-z\\.]+ Zone)/";
+    const REGEX_PENALTY = "/".Player::RX_WITH_TEAM."@([A-Za-z\\h\\-\\(\\)]+)\\((\\d+) min\\)/";
+    const REGEX_ZONE = "/, ([A-Za-z\\.]+ Zone)/";
     const REGEX_DRAWNBY = "/Drawn By: ".Player::RX_WITH_TEAM."/";
     const REGEX_SERVEDBY = "/ Served By: ".Player::RX_NO_TEAM."/";
 
@@ -43,7 +44,11 @@ class Penalty extends Event
     /** @var string $location */
     public $location;
 
+    /** @var Player $servedByPlayer */
     public $servedByPlayer;
+
+    /** @var bool $ledToPenaltyShot */
+    public $ledToPenaltyShot;
 
     /**
      * @inheritdoc
@@ -72,9 +77,16 @@ class Penalty extends Event
             $this->servedByPlayer = new Player($data['servedby_number'], $data['servedby_player'], $this->team);
         }
 
-        $this->infraction = $data['infraction'];
+        if (preg_match("/PS-/", $data['infraction'])) {
+            $this->infraction = preg_replace("/PS-/", "", $data['infraction']);
+            $this->ledToPenaltyShot = true;
+        } else {
+            $this->infraction = $data['infraction'];
+            $this->ledToPenaltyShot = false;
+        }
+
         $this->duration = $data['duration'];
-        $this->location = $data['location'];
+        $this->location = isset($data['location']) ? $data['location'] : null;
 
         $this->parsed = true;
 
@@ -98,14 +110,19 @@ class Penalty extends Event
             $line = preg_replace(self::REGEX_SERVEDBY, '', $line);
         }
 
+        if (preg_match_all(self::REGEX_ZONE, $line, $zonematches)) {
+            $penalty += [
+                'location' => trim($zonematches[1][0])
+            ];
+        }
+
         if (preg_match_all(self::REGEX_PENALTY, $line, $pmatches)) {
             $penalty += [
                 'penalty_team'   => $pmatches[1][0],
                 'penalty_number' => $pmatches[2][0],
                 'penalty_player' => $pmatches[3][0],
                 'infraction'     => trim($pmatches[4][0]),
-                'duration'       => trim($pmatches[5][0]),
-                'location'       => trim($pmatches[6][0])
+                'duration'       => trim($pmatches[5][0])
             ];
         }
 

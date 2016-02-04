@@ -2,7 +2,6 @@
 
 namespace NHL\Events;
 
-
 use NHL\Entities\Player;
 use NHL\Entities\Team;
 use NHL\Event;

@@ -27,7 +27,7 @@ class Parser
     /**
      * Parser constructor.
      *
-     * @param Command    $command
+     * @param Command $command
      */
     public function __construct(Command $command)
     {
@@ -192,7 +192,9 @@ class Parser
             $away_score = $matches_visitor[1][0];
         } else {
             // DEBUG: Remove me later OK?
-            var_dump($v_text); die();
+            var_dump($v_text);
+            die();
+
             return false;
         }
 
@@ -201,7 +203,9 @@ class Parser
             $home_score = $matches_home[1][0];
         } else {
             // DEBUG: Remove me later OK?
-            var_dump($h_text); die();
+            var_dump($h_text);
+            die();
+
             return false;
         }
 

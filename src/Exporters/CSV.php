@@ -1,7 +1,6 @@
 <?php
 namespace NHL\Exporters;
 
-
 use NHL\Contracts\Exporter;
 use NHL\Entities\Game;
 use NHL\Event;
@@ -21,6 +20,9 @@ class CSV extends File implements Exporter
     /** @var array $ignoredColumns */
     protected $ignoredColumns;
 
+    /**
+     * @throws ExporterException
+     */
     protected function prepare()
     {
         if (is_null($this->ignoredColumns)) {
@@ -87,7 +89,7 @@ class CSV extends File implements Exporter
         }, ARRAY_FILTER_USE_KEY);
 
         $columns = [];
-        foreach($fields as $key => $value) {
+        foreach ($fields as $key => $value) {
             if (is_array($value)) {
                 $columns[] = implode(';', $value);
             } else {

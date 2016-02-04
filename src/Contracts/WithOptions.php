@@ -50,7 +50,8 @@ trait WithOptions
      *
      * @return mixed
      */
-    public function getOption($option) {
+    public function getOption($option)
+    {
         return isset($this->options[$option]) ? $this->options[$option] : null;
     }
 

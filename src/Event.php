@@ -73,7 +73,7 @@ abstract class Event
     public function setTime($time)
     {
         $parts = explode(':', $time);
-        $this->eventTime = $parts[0] . ':' . mb_substr($parts[1], 0, 2);
+        $this->eventTime = $parts[0].':'.mb_substr($parts[1], 0, 2);
     }
 
     /**

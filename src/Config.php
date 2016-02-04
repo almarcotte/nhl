@@ -23,7 +23,7 @@ class Config
         $this->data = parse_ini_file($this->file, true);
 
         // Merge with 'dependsOn' and explode options that should be arrays
-        foreach($this->data as $section => $options) {
+        foreach ($this->data as $section => $options) {
             if (isset($options['dependsOn'])) {
                 $this->data[$section] = array_merge($this->data[$options['dependsOn']], $this->data[$section]);
             }

@@ -4,6 +4,7 @@ namespace NHL\Exporters;
 
 
 use NHL\Contracts\Exporter;
+use NHL\Entities\Game;
 
 /**
  * Class Void
@@ -12,8 +13,18 @@ use NHL\Contracts\Exporter;
  *
  * @package NHL\Exporters
  */
-class Void extends StdOut implements Exporter
+class Void implements Exporter
 {
+    /** @var Game $game */
+    protected $game;
+
+    /**
+     * @inheritdoc
+     */
+    public function setGame(Game $game)
+    {
+        $this->game = $game;
+    }
     /**
      * @inheritdoc
      */

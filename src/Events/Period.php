@@ -2,7 +2,6 @@
 
 namespace NHL\Events;
 
-
 use NHL\Event;
 
 /**

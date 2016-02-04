@@ -2,7 +2,11 @@
 
 namespace NHL\Entities;
 
-
+/**
+ * Class Player
+ *
+ * @package NHL\Entities
+ */
 class Player
 {
     /** @var string $number */

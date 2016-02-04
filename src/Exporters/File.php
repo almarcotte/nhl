@@ -9,7 +9,7 @@ use NHL\Entities\Game;
 use NHL\Exceptions\ExporterException;
 
 /**
- * Class PlainText
+ * Class File
  * Exports a game's data to a plain text file. This is exactly the same as the stdout exporter
  * but the content is written to a file.
  *

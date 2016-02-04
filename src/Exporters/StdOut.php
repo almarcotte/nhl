@@ -2,7 +2,6 @@
 
 namespace NHL\Exporters;
 
-
 use NHL\Contracts\Exporter;
 use NHL\Contracts\VerboseOutput;
 use NHL\Entities\Game;
@@ -15,24 +14,12 @@ use NHL\Exceptions\ExporterException;
  *
  * @package NHL\Exporters
  */
-class StdOut implements Exporter
+class StdOut extends Void implements Exporter
 {
     use VerboseOutput;
 
-    /** @var Game $game */
-    private $game;
-
-    /**
-     * @inheritdoc
-     *
-     * @return StdOut
-     */
-    public function setGame(Game $game)
-    {
-        $this->game = $game;
-
-        return $this;
-    }
+    /** @var Game */
+    protected $game;
 
     /**
      * @inheritdoc

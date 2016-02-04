@@ -97,7 +97,7 @@ class Downloader
     private function initSeasonFolder()
     {
         // Make a folder for the current season, if it doesn't exist
-        $season_folder = $this->command->config->get('general', 'files') . DIRECTORY_SEPARATOR . $this->options['season'];
+        $season_folder = $this->command->config->get('general', 'files').DIRECTORY_SEPARATOR.$this->options['season'];
         if (!file_exists($season_folder)) {
             $this->command->out("Attempting to create season folder at ".$season_folder);
             mkdir($season_folder);
@@ -127,6 +127,7 @@ class Downloader
         if ($remote) {
             file_put_contents($output, $remote);
             $this->downloaded++;
+
             return true;
         } else {
             return false;
