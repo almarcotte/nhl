@@ -57,6 +57,7 @@ class ParserTest extends PHPUnit_Framework_TestCase
 
         // Another penalty shot with a different format
         $shot = new \NHL\Events\Shot("PHI ONGOAL - #21 LAUGHTON, Penalty Shot, Backhand, Off. Zone, 15 ft.");
+        $this->assertTrue($shot->parse());
         $this->assertEquals('Backhand', $shot->shotType);
         $this->assertEquals('ONGOAL', $shot->target);
         $this->assertEquals('Off. Zone', $shot->location);
