@@ -8,12 +8,13 @@ use NHL\Event;
 
 /**
  * Class Block
+ *
  * @package NHL\Events
  */
 class Block extends Event
 {
 
-    const REGEX = "/([A-Z\\.]{3}) #(\\d+) ([A-Z\\-\\h]+)(?: BLOCKED BY )([A-Z\\.]{3}) #(\\d+) ([A-Z\\-\\h]+), (\\w+), ([\\w+.\\h]+)/";
+    const REGEX = "/".Player::RX_WITH_TEAM."(?: BLOCKED BY )".Player::RX_WITH_TEAM.", (\\w+), ([\\w+.\\h]+)/";
 
     const DESCRIBE = "[P%s: %s] %s blocked a %s shot from %s in %s";
 
@@ -45,6 +46,7 @@ class Block extends Event
         $data = $this->toArray();
         if (empty($data)) {
             $this->parsed = false;
+
             return false;
         }
 
@@ -58,6 +60,7 @@ class Block extends Event
         $this->playerBlocking = new Player($data['numberBlocking'], $data['playerBlocking'], $this->teamBlocking);
 
         $this->parsed = true;
+
         return true;
     }
 
@@ -69,14 +72,14 @@ class Block extends Event
     {
         if (preg_match_all(self::REGEX, $this->line, $matches)) {
             return [
-                'teamBlocked' => $matches[1][0],
-                'numberBlocked' => $matches[2][0],
-                'playerBlocked' => $matches[3][0],
-                'teamBlocking' => $matches[4][0],
+                'teamBlocked'    => $matches[1][0],
+                'numberBlocked'  => $matches[2][0],
+                'playerBlocked'  => $matches[3][0],
+                'teamBlocking'   => $matches[4][0],
                 'numberBlocking' => $matches[5][0],
                 'playerBlocking' => $matches[6][0],
-                'shotType' => $matches[7][0],
-                'location' => $matches[8][0],
+                'shotType'       => $matches[7][0],
+                'location'       => $matches[8][0],
             ];
         }
 

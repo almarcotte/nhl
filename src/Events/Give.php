@@ -13,7 +13,7 @@ use NHL\Event;
  */
 class Give extends Event
 {
-    const REGEX = "/([A-Z\\.]{3})@(?:GIVE|TAKE)AWAY - #(\\d+) ([A-Z\\h-]+), ([A-Za-z\\h\\.]+)/";
+    const REGEX = "/".Team::RX."@(?:GIVE|TAKE)AWAY - ".Player::RX_NO_TEAM.", ([A-Za-z\\h\\.]+)/";
     const DESCRIBE = "[P%s: %s] Giveaway: %s in %s";
 
     /** @var string $eventType */
@@ -36,6 +36,7 @@ class Give extends Event
         $data = $this->toArray();
         if (empty($data)) {
             $this->parsed = false;
+
             return false;
         }
 
@@ -44,6 +45,7 @@ class Give extends Event
         $this->location = $data['location'];
 
         $this->parsed = true;
+
         return true;
     }
 
@@ -54,15 +56,16 @@ class Give extends Event
     {
         if (preg_match_all(self::REGEX, $this->line, $matches)) {
             return [
-                'team' => $matches[1][0],
-                'number' => $matches[2][0],
-                'name' => $matches[3][0],
+                'team'     => $matches[1][0],
+                'number'   => $matches[2][0],
+                'name'     => $matches[3][0],
                 'location' => $matches[4][0]
             ];
         } else {
             return [];
         }
     }
+
     /**
      * @inheritdoc
      */

@@ -17,7 +17,7 @@ class Shot extends Event
     /**
      * REGEX to match a shot event line
      */
-    const REGEX = "/([A-Z\\.]{3}) ([A-Z]+) - #(\\d+) ([A-Z\\h\\-]+), ([A-Za-z\\h\\-]+), ([A-Za-z\\. ]+), (\\d+) ft./";
+    const REGEX = "/".Team::RX." ([A-Z]+) - ".Player::RX_NO_TEAM.", ([A-Za-z\\h\\-]+), ([A-Za-z\\. ]+), (\\d+) ft./";
 
     const DESCRIBE = "[P%s: %s] %s shot %s by %s from %s (%s ft.)";
 
@@ -44,6 +44,7 @@ class Shot extends Event
 
     /**
      * Parse a SHOT event line.
+     *
      * @return bool
      */
     public function parse()
@@ -52,6 +53,7 @@ class Shot extends Event
         $data = $this->toArray();
         if (empty($data)) {
             $this->parsed = false;
+
             return false;
         }
 
@@ -74,11 +76,11 @@ class Shot extends Event
     {
         if (preg_match_all(self::REGEX, $this->line, $matches)) {
             return [
-                'team' => $matches[1][0],
-                'target' => $matches[2][0],
-                'number' => $matches[3][0],
-                'player' => $matches[4][0],
-                'type' => $matches[5][0],
+                'team'     => $matches[1][0],
+                'target'   => $matches[2][0],
+                'number'   => $matches[3][0],
+                'player'   => $matches[4][0],
+                'type'     => $matches[5][0],
                 'location' => $matches[6][0],
                 'distance' => $matches[7][0]
             ];

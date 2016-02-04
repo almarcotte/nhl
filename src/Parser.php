@@ -176,9 +176,6 @@ class Parser
      */
     private function createGameWithInfo($filename)
     {
-        // Another bit of a mess of a regex to match the game score and teams
-        $regex = "/(?:VISITOR|HOME)(\\d+)([A-Z]+)(?:Game)/";
-
         // Temporarily disable xml errors since the file we're parsing is a bit of a mess
         libxml_use_internal_errors(true);
 
@@ -190,18 +187,20 @@ class Parser
         $h_text = preg_replace("/[^A-Za-z\\d]/", "", $doc->getElementById('Home')->textContent);
 
         // Grab the home / away teams and scores
-        if (preg_match_all($regex, $v_text, $matches_visitor)) {
+        if (preg_match_all(Game::RX_SCORETEAMS, $v_text, $matches_visitor)) {
             $away = new Team($matches_visitor[2][0]);
             $away_score = $matches_visitor[1][0];
         } else {
+            // DEBUG: Remove me later OK?
             var_dump($v_text); die();
             return false;
         }
 
-        if (preg_match_all($regex, $h_text, $matches_home)) {
+        if (preg_match_all(Game::RX_SCORETEAMS, $h_text, $matches_home)) {
             $home = new Team($matches_home[2][0]);
             $home_score = $matches_home[1][0];
         } else {
+            // DEBUG: Remove me later OK?
             var_dump($h_text); die();
             return false;
         }
@@ -227,12 +226,12 @@ class Parser
                 continue;
             }
 
-            if (preg_match("/([A-Za-z]+day [A-Za-z]+ \\d+ \\d+)/", $value, $matches)) {
+            if (preg_match(Game::RX_DATE, $value, $matches)) {
                 $game->date = $matches[1];
-            } else if (preg_match("/Attendance (\\d+)(?:at)([A-Za-z\\h\\-]+)/", $value, $matches)) {
+            } else if (preg_match(Game::RX_ATTEND, $value, $matches)) {
                 $game->attendance = (int)$matches[1];
                 $game->venue = $matches[2];
-            } else if (preg_match_all("/(?:Start|End)(\\d+:\\d+)([A-Z]+)/", $value, $matches)) {
+            } else if (preg_match_all(Game::RX_ENDSTART, $value, $matches)) {
                 $game->startTime = $matches[1][0];
                 $game->startTimeZone = $matches[2][0];
                 $game->endTime = $matches[1][1];

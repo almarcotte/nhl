@@ -13,8 +13,8 @@ use NHL\Event;
  */
 class Goal extends Event
 {
-    const GOAL_REGEX = "/([A-Z\\.]{3})\\h#(\\d+)\\h([A-Z\\h\\-]+)(?:\\(\\d+\\)),\\h([A-Za-z\\-\\h]+),\\h([A-Za-z\\-\\.\\h]+),\\h(\\d+)\\hft./";
-    const ASSIST_REGEX = "/(?:[:|;]) #(\\d+)\\h([A-Z\\h\\-]+)/";
+    const GOAL_REGEX = "/".Player::RX_WITH_TEAM."(?:\\(\\d+\\)),\\h([A-Za-z\\-\\h]+),\\h([A-Za-z\\-\\.\\h]+),\\h(\\d+)\\hft./";
+    const ASSIST_REGEX = "/(?:[:|;]) ".Player::RX_NO_TEAM."/";
     const DESCRIBE = "[P%s: %s] Goal (%s) by %s from %s ft. in %s. Assists: %s";
 
     /**
@@ -48,6 +48,7 @@ class Goal extends Event
         $data = $this->toArray();
         if (empty($data)) {
             $this->parsed = false;
+
             return false;
         }
 
@@ -56,11 +57,12 @@ class Goal extends Event
         $this->location = $data['goal']['location'];
         $this->distance = $data['goal']['distance'];
         $this->shotType = $data['goal']['type'];
-        foreach($data['assists'] as $assist) {
+        foreach ($data['assists'] as $assist) {
             $this->assists[] = new Player($assist['number'], $assist['name'], $this->team);
         }
 
         $this->parsed = true;
+
         return true;
     }
 
@@ -75,27 +77,27 @@ class Goal extends Event
         if (preg_match_all(self::ASSIST_REGEX, $this->line, $assist_matches)) {
             $numbers = array_values($assist_matches[1]);
             $names = array_values($assist_matches[2]);
-            for ($i=0; $i < count($numbers); $i++) {
+            for ($i = 0; $i < count($numbers); $i++) {
                 $assists[] = [
                     'number' => $numbers[$i],
-                    'name' => $names[$i]
+                    'name'   => $names[$i]
                 ];
             }
         }
 
         if (preg_match_all(self::GOAL_REGEX, $this->line, $goal_matches)) {
             $goal = [
-                'team' => $goal_matches[1][0],
-                'number' => $goal_matches[2][0],
-                'name' => $goal_matches[3][0],
-                'type' => $goal_matches[4][0],
+                'team'     => $goal_matches[1][0],
+                'number'   => $goal_matches[2][0],
+                'name'     => $goal_matches[3][0],
+                'type'     => $goal_matches[4][0],
                 'location' => $goal_matches[5][0],
                 'distance' => $goal_matches[6][0],
             ];
         }
 
         return [
-            'goal' => $goal,
+            'goal'    => $goal,
             'assists' => $assists
         ];
     }

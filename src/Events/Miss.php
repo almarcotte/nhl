@@ -13,7 +13,7 @@ use NHL\Event;
  */
 class Miss extends Event
 {
-    const REGEX = "/([A-Z\\.]{3}) #(\\d+) ([A-Z\\h\\-]+), ([A-Za-z\\.\\-\\h]+), ([A-Za-z\\.\\-\\h]+), ([A-Za-z\\.\\-\\h]+), (\\d+) ft./";
+    const REGEX = "/".Player::RX_WITH_TEAM.", ([A-Za-z\\.\\-\\h]+), ([A-Za-z\\.\\-\\h]+), ([A-Za-z\\.\\-\\h]+), (\\d+) ft./";
     const DESCRIBE = "[P%s: %s] Missed %s shot by %s from %s (%s)";
 
     /** @var string $eventType */
@@ -33,6 +33,7 @@ class Miss extends Event
         $data = $this->toArray();
         if (empty($data)) {
             $this->parsed = false;
+
             return false;
         }
 
@@ -44,6 +45,7 @@ class Miss extends Event
         $this->player = new Player($data['number'], $data['player'], $this->team);
 
         $this->parsed = true;
+
         return true;
     }
 
@@ -54,11 +56,11 @@ class Miss extends Event
     {
         if (preg_match_all(self::REGEX, $this->line, $matches)) {
             return [
-                'team' => $matches[1][0],
-                'number' => $matches[2][0],
-                'player' => $matches[3][0],
-                'type' => $matches[4][0],
-                'target' => $matches[5][0],
+                'team'     => $matches[1][0],
+                'number'   => $matches[2][0],
+                'player'   => $matches[3][0],
+                'type'     => $matches[4][0],
+                'target'   => $matches[5][0],
                 'location' => $matches[6][0],
                 'distance' => $matches[7][0]
             ];

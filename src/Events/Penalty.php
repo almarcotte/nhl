@@ -13,9 +13,9 @@ use NHL\Event;
  */
 class Penalty extends Event
 {
-    const REGEX_PENALTY = "/([A-Z\\.]{3}) #(\\d+) ([A-Z\\-\\.\\h]+)@([A-Za-z\\h\\-\\(\\)]+)\\((\\d+) min\\), ([A-Za-z\\.]+ Zone)/";
-    const REGEX_DRAWNBY = "/Drawn By: ([A-Z\\.]{3}) #(\\d+) ([A-Z\\-\\.\\h]+)/";
-    const REGEX_SERVEDBY = "/ Served By: #(\\d+) ([A-Za-z\\-\\.\\h]+)/";
+    const REGEX_PENALTY = "/".Player::RX_WITH_TEAM."@([A-Za-z\\h\\-\\(\\)]+)\\((\\d+) min\\), ([A-Za-z\\.]+ Zone)/";
+    const REGEX_DRAWNBY = "/Drawn By: ".Player::RX_WITH_TEAM."/";
+    const REGEX_SERVEDBY = "/ Served By: ".Player::RX_NO_TEAM."/";
 
     const DESCRIBE = "[P%s: %s] %s %s minutes for %s in %s drawn by %s";
 
@@ -53,6 +53,7 @@ class Penalty extends Event
         $data = $this->toArray();
         if (empty($data)) {
             $this->parsed = false;
+
             return false;
         }
 
@@ -99,19 +100,19 @@ class Penalty extends Event
 
         if (preg_match_all(self::REGEX_PENALTY, $line, $pmatches)) {
             $penalty += [
-                'penalty_team' => $pmatches[1][0],
+                'penalty_team'   => $pmatches[1][0],
                 'penalty_number' => $pmatches[2][0],
                 'penalty_player' => $pmatches[3][0],
-                'infraction' => trim($pmatches[4][0]),
-                'duration' => trim($pmatches[5][0]),
-                'location' => trim($pmatches[6][0])
+                'infraction'     => trim($pmatches[4][0]),
+                'duration'       => trim($pmatches[5][0]),
+                'location'       => trim($pmatches[6][0])
             ];
         }
 
         // Check if drawn by anybody
         if (preg_match_all(self::REGEX_DRAWNBY, $line, $dbmatches)) {
             $penalty += [
-                'drawn_team' => $dbmatches[1][0],
+                'drawn_team'   => $dbmatches[1][0],
                 'drawn_number' => $dbmatches[2][0],
                 'drawn_player' => $dbmatches[3][0],
             ];

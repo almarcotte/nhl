@@ -55,6 +55,11 @@ class Game
     /** @var string $shortID */
     public $shortID;
 
+    const RX_DATE = "/([A-Za-z]+day [A-Za-z]+ \\d+ \\d+)/";
+    const RX_ATTEND = "/Attendance (\\d+)(?:at)([A-Za-z\\h\\-]+)/";
+    const RX_ENDSTART = "/(?:Start|End)(\\d+:\\d+)([A-Z]+)/";
+    const RX_SCORETEAMS = "/(?:VISITOR|HOME)(\\d+)([A-Z]+)(?:Game)/";
+
     /**
      * Game constructor.
      *

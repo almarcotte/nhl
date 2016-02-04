@@ -8,6 +8,9 @@ class Team
     /** @var string $name */
     public $name;
 
+    /** RegEx pattern for teams, used in a couple of events */
+    const RX = "([A-Z\\.]{3})";
+
     /**
      * Team constructor.
      * @param $name

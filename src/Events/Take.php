@@ -14,7 +14,7 @@ use NHL\Event;
  */
 class Take extends Event
 {
-    const REGEX = "/([A-Z\\.]{3})@(?:GIVE|TAKE)AWAY - #(\\d+) ([A-Z\\h-]+), ([A-Za-z\\h\\.]+)/";
+    const REGEX = "/".Team::RX."@(?:GIVE|TAKE)AWAY - ".Player::RX_NO_TEAM.", ([A-Za-z\\h\\.]+)/";
     const DESCRIBE = "[P%s: %s] Takeaway: %s in %s";
 
     /** @var string $eventType */
