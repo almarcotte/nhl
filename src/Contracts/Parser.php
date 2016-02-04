@@ -82,4 +82,17 @@ abstract class Parser
         return $files;
     }
 
+    /**
+     * @param string $value
+     *
+     * @return string
+     */
+    protected function cleanUpLine($value)
+    {
+        $return = str_replace('&nbsp;', '@', $value);
+        $return = preg_replace("/[^A-Za-z\\h\\'\\.\\-\\d\\#\\@\\,\\(\\)\\:]/", " ", $return);
+
+        return trim($return);
+    }
+
 }

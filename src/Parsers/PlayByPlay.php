@@ -71,7 +71,7 @@ class PlayByPlay extends Parser
             $lineCount = 0;
             /** @var AbstractNode $td */
             foreach ($tr->getChildren() as $td) {
-                $value = trim(str_replace('&nbsp;', '@', $td->text)); // clean up the line, adding @ to make parsing a bit easier for certain events
+                $value = $this->cleanUpLine($td->text);
                 if ($value) {
                     $lineCount++;
                     // Each event is actually 6 lines

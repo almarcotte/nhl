@@ -14,16 +14,31 @@ use NHL\Event;
 class Miss extends Event
 {
     const REGEX = "/".Player::RX_WITH_TEAM.", ([A-Za-z\\.\\-\\h]+), ([A-Za-z\\.\\-\\h]+), ([A-Za-z\\.\\-\\h]+), (\\d+) ft./";
-    const DESCRIBE = "[P%s: %s] Missed %s shot by %s from %s (%s)";
+    const DESCRIBE = "[P%s: %s] Missed %s shot %s by %s from %s (%s)";
 
     /** @var string $eventType */
     public $eventType = Types::MISS;
+
+    /** @var string $shotType */
     public $shotType;
+
+    /** @var string $location */
     public $location;
+
+    /** @var int $distance */
     public $distance;
+
+    /** @var string $target */
     public $target;
+
+    /** @var Player $player */
     public $player;
+
+    /** @var Team $team */
     public $team;
+
+    /** @var bool $isPenaltyShot */
+    public $isPenaltyShot;
 
     /**
      * @inheritdoc
@@ -43,6 +58,7 @@ class Miss extends Event
         $this->target = $data['target'];
         $this->team = new Team($data['team']);
         $this->player = new Player($data['number'], $data['player'], $this->team);
+        $this->isPenaltyShot = $data['isPenalty'];
 
         $this->parsed = true;
 
@@ -56,13 +72,25 @@ class Miss extends Event
     {
         if (preg_match_all(self::REGEX, $this->line, $matches)) {
             return [
-                'team'     => $matches[1][0],
-                'number'   => $matches[2][0],
-                'player'   => $matches[3][0],
-                'type'     => $matches[4][0],
-                'target'   => $matches[5][0],
-                'location' => $matches[6][0],
-                'distance' => $matches[7][0]
+                'team'      => $matches[1][0],
+                'number'    => $matches[2][0],
+                'player'    => $matches[3][0],
+                'type'      => $matches[4][0],
+                'target'    => $matches[5][0],
+                'location'  => $matches[6][0],
+                'distance'  => $matches[7][0],
+                'isPenalty' => false
+            ];
+        } else if (preg_match_all(Shot::REGEX_PENALTYSHOT, $this->line, $matches)) {
+            return [
+                'team'      => $matches[1][0],
+                'number'    => $matches[2][0],
+                'player'    => $matches[3][0],
+                'type'      => $matches[5][0],
+                'target'    => $matches[6][0],
+                'location'  => $matches[7][0],
+                'distance'  => $matches[8][0],
+                'isPenalty' => true
             ];
         }
 
@@ -80,6 +108,7 @@ class Miss extends Event
                 $this->eventPeriod,
                 $this->eventTime,
                 $this->shotType,
+                $this->isPenaltyShot ? '(Penalty)' : '',
                 $this->player,
                 $this->distance,
                 $this->location

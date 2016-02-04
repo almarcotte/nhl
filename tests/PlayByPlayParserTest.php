@@ -46,14 +46,15 @@ class ParserTest extends PHPUnit_Framework_TestCase
 
     public function testPenaltyShotParsed()
     {
+
         $shot = new \NHL\Events\Shot("PHI #28 GIROUX, Penalty Shot, Wrist, Wide of Net, Off. Zone, 19 ft.");
         $this->assertTrue($shot->parse());
-
         $this->assertEquals('Wrist', $shot->shotType);
         $this->assertEquals('Wide of Net', $shot->target);
         $this->assertEquals('Off. Zone', $shot->location);
         $this->assertEquals('19', $shot->distance);
         $this->assertTrue($shot->isPenaltyShot);
+        $this->assertStringEndsWith("Wrist shot Wide of Net by #28 GIROUX (PHI) from Off. Zone (19 ft.)", $shot->describe());
 
         // Another penalty shot with a different format
         $shot = new \NHL\Events\Shot("PHI ONGOAL - #21 LAUGHTON, Penalty Shot, Backhand, Off. Zone, 15 ft.");
@@ -63,6 +64,7 @@ class ParserTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('Off. Zone', $shot->location);
         $this->assertEquals('15', $shot->distance);
         $this->assertTrue($shot->isPenaltyShot);
+        $this->assertStringEndsWith("Backhand shot ONGOAL by #21 LAUGHTON (PHI) from Off. Zone (15 ft.)", $shot->describe());
     }
 
     public function testParseMiss()

@@ -28,8 +28,11 @@ class StdOut extends Void implements Exporter
     public function export()
     {
         foreach ($this->game->getEvents() as $event) {
-            var_dump($event->line);
-            $this->command->climate->out($event->describe());
+            if (strlen($event->describe()) > 1) {
+                $this->command->climate->out($event->describe());
+            } else { // DEBUG -- If this happens something wasn't parsed properly
+                var_dump($event);
+            }
         }
     }
 

@@ -151,7 +151,7 @@ class Penalty extends Event
                 $this->player,
                 $this->duration,
                 $this->infraction,
-                $this->location,
+                is_null($this->location) ? 'Not Specified' : $this->location,
                 $this->drawnPlayer
             );
         }
