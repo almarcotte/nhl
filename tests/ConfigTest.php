@@ -44,8 +44,7 @@ class ConfigTest extends PHPUnit_Framework_TestCase
             ['general', 'verbose', 1],
             ['general', 'season', '20152016'],
             ['export', 'exporter', 'csv'],
-            ['csv', 'nameFormat', '%GAMEID%'], // Depending on another section
-            ['csv', 'extension', 'csv'], // Overwrite same setting from FILE
+            ['csv', 'nameFormat', '%EVENTTYPE%.csv'], // Depending on another section
         ];
     }
 
@@ -54,7 +53,7 @@ class ConfigTest extends PHPUnit_Framework_TestCase
         /** @var \NHL\Exporters\FileExporter $fileExporter */
         $fileExporter = ExporterFactory::make('file', self::$command);
 
-        foreach(['path', 'oneFilePerGame', 'bySeason', 'nameFormat'] as $option) {
+        foreach(['bySeason', 'nameFormat'] as $option) {
             $this->assertTrue($fileExporter->hasOption($option));
         }
     }
@@ -64,9 +63,8 @@ class ConfigTest extends PHPUnit_Framework_TestCase
         /** @var \NHL\Exporters\CSVExporter $csvExporter */
         $csvExporter = ExporterFactory::make('csv', self::$command);
 
-        $this->assertEquals(1, $csvExporter->getOption('bySeason'));
-        $this->assertEquals('csv', $csvExporter->getOption('extension')); // Should be CSV, not null
-        $this->assertEquals('a,b', $csvExporter->getOption('ignoreColumns'));
+        $this->assertEquals("%SEASON%/%SHORTID%-%AWAYTEAM%-at-%HOMETEAM%", $csvExporter->getOption("folderStructure"));
+        $this->assertEquals("id", $csvExporter->getOption('ignoreColumns'));
         $this->assertEquals('output/', $csvExporter->getOption('path')); // Comes from [export] settings
     }
 

@@ -56,13 +56,15 @@ class Game
     /** @var string $id Unique identifier for this game based on season and game number */
     public $id;
 
-    /** @var string $shortID */
+    /** @var string $shortID Unique identifier for a given season */
     public $shortID;
 
     const RX_DATE = "/([A-Za-z]+day [A-Za-z]+ \\d+ \\d+)/";
     const RX_ATTEND = "/Attendance (\\d+)(?:at)([A-Za-z\\h\\-]+)/";
     const RX_ENDSTART = "/(?:Start|End)(\\d+:\\d+)([A-Z]+)/";
     const RX_SCORETEAMS = "/(?:VISITOR|HOME)(\\d+)([A-Z]+)(?:Game)/";
+
+    const DESCRIBE = "%s (%s) at %s (%s)";
 
     /**
      * Game constructor.
@@ -72,7 +74,8 @@ class Game
     public function __construct($gameID)
     {
         $this->id = $gameID;
-        $this->shortID = mb_strcut($this->id, 11);
+        $this->shortID = mb_strcut($this->id, 12);
+        $this->setSeason(mb_strcut($gameID, 0, 8));
     }
 
     /**
@@ -125,9 +128,20 @@ class Game
 
     /**
      * @param string $season
+     * @throws \InvalidArgumentException
      */
     public function setSeason($season)
     {
+        if (mb_strlen($season) !== 8) {
+            throw new \InvalidArgumentException("Season must be 8 characters: AAAABBBB");
+        }
+        $yearBegin = intval(mb_strcut($season, 0, 4));
+        $yearEnd = intval(mb_strcut($season, 4));
+
+        if ($yearBegin > $yearEnd || $yearBegin+1 != $yearEnd) {
+            throw new \InvalidArgumentException("Season must be 2 consecutive years, ex. 20152016, $season given");
+        }
+
         $this->season = $season;
     }
 
@@ -136,6 +150,12 @@ class Game
      */
     public function __toString()
     {
-        return $this->away . "(".$this->awayScore.") at " . $this->home . "(".$this->homeScore.")";
+        return sprintf(
+            self::DESCRIBE,
+            $this->away,
+            $this->awayScore,
+            $this->home,
+            $this->homeScore
+        );
     }
 }
