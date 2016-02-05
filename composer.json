@@ -10,7 +10,6 @@
   "require": {
     "league/climate": "^3.2",
     "phpunit/phpunit": "^5.1",
-    "querypath/QueryPath": "^3.0",
     "paquettg/php-html-parser": "^1.6"
   },
   "autoload": {
