@@ -1,7 +1,6 @@
 <?php
 namespace NHL\Exporters;
 
-use NHL\Contracts\Exporter;
 use NHL\Entities\Game;
 use NHL\Event;
 use NHL\Exceptions\ExporterException;
@@ -12,7 +11,7 @@ use NHL\Exceptions\ExporterException;
  *
  * @package NHL\Exporters
  */
-class CSV extends File implements Exporter
+class CSVExporter extends FileExporter
 {
     /** @var Game $game */
     protected $game;

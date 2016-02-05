@@ -3,7 +3,7 @@
 namespace NHL;
 
 use League\CLImate\CLImate;
-use NHL\Contracts\Parser;
+use NHL\Contracts\AbstractParser;
 use NHL\Exceptions\DownloaderException;
 use NHL\Exceptions\ExporterException;
 use NHL\Exceptions\ParserException;
@@ -28,13 +28,13 @@ class Command
     /** @var Downloader $downloader */
     public $downloader;
 
-    /** @var Contracts\Exporter $exporter */
+    /** @var Contracts\AbstractExporter $exporter */
     public $exporter;
 
     /** @var Config $config */
     public $config;
 
-    /** @var Parser $parser */
+    /** @var AbstractParser $parser */
     public $parser;
 
     /**

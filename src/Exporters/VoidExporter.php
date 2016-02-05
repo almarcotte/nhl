@@ -2,8 +2,7 @@
 
 namespace NHL\Exporters;
 
-
-use NHL\Contracts\Exporter;
+use NHL\Contracts\AbstractExporter;
 use NHL\Entities\Game;
 
 /**
@@ -13,18 +12,11 @@ use NHL\Entities\Game;
  *
  * @package NHL\Exporters
  */
-class Void implements Exporter
+class VoidExporter extends AbstractExporter
 {
     /** @var Game $game */
     protected $game;
 
-    /**
-     * @inheritdoc
-     */
-    public function setGame(Game $game)
-    {
-        $this->game = $game;
-    }
     /**
      * @inheritdoc
      */

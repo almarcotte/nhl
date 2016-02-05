@@ -2,27 +2,29 @@
 
 namespace NHL\Contracts;
 
-use NHL\Command;
 use NHL\Entities\Game;
 
 /**
- * Interface Exporter
+ * Interface AbstractExporter
  * All exports should implement this interface
  *
  *
  * @package NHL
  */
-interface Exporter
+abstract class AbstractExporter
 {
     /**
      * Set the game
      *
      * @param Game $game
      */
-    public function setGame(Game $game);
+    public function setGame(Game $game)
+    {
+        $this->game = $game;
+    }
 
     /**
      * Export the data
      */
-    public function export();
+    abstract public function export();
 }

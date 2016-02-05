@@ -34,7 +34,7 @@ class Player
     public function __construct($number, $name, $team)
     {
         $this->number = $number;
-        $this->name = ucfirst($name);
+        $this->name = $name;
         $this->team = $team;
     }
 

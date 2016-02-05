@@ -51,7 +51,7 @@ class ConfigTest extends PHPUnit_Framework_TestCase
 
     public function testFileExporterConfig()
     {
-        /** @var \NHL\Exporters\File $fileExporter */
+        /** @var \NHL\Exporters\FileExporter $fileExporter */
         $fileExporter = ExporterFactory::make('file', self::$command);
 
         foreach(['path', 'oneFilePerGame', 'bySeason', 'nameFormat'] as $option) {
@@ -61,7 +61,7 @@ class ConfigTest extends PHPUnit_Framework_TestCase
 
     public function testExporterConfigWithDependency()
     {
-        /** @var \NHL\Exporters\CSV $csvExporter */
+        /** @var \NHL\Exporters\CSVExporter $csvExporter */
         $csvExporter = ExporterFactory::make('csv', self::$command);
 
         $this->assertEquals(1, $csvExporter->getOption('bySeason'));

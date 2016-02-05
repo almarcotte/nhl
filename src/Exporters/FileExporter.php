@@ -2,7 +2,7 @@
 
 namespace NHL\Exporters;
 
-use NHL\Contracts\Exporter;
+use NHL\Contracts\AbstractExporter;
 use NHL\Contracts\VerboseOutput;
 use NHL\Contracts\WithOptions;
 use NHL\Entities\Game;
@@ -15,7 +15,7 @@ use NHL\Exceptions\ExporterException;
  *
  * @package NHL\Exporters
  */
-class File implements Exporter
+class FileExporter extends AbstractExporter
 {
     use VerboseOutput;
     use WithOptions;
@@ -36,14 +36,6 @@ class File implements Exporter
         '%AWAYTEAM%' => 'away',
         '%SHORTID%' => 'shortID'
     ];
-
-    /**
-     * @inheritdoc
-     */
-    public function setGame(Game $game)
-    {
-        $this->game = $game;
-    }
 
     /**
      * Validates the configuration and sets a few things up before exporting
@@ -73,7 +65,7 @@ class File implements Exporter
     }
 
     /**
-     * @return bool
+     * @inheritdoc
      * @throws ExporterException
      */
     public function export()
@@ -83,8 +75,6 @@ class File implements Exporter
         foreach ($this->game->getEvents() as $event) {
             file_put_contents($this->path, $event->describe() . "\n", FILE_APPEND | LOCK_EX);
         }
-
-        return true;
     }
 
     /**

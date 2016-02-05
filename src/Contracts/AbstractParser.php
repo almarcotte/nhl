@@ -16,7 +16,7 @@ use RegexIterator;
  *
  * @package NHL
  */
-abstract class Parser
+abstract class AbstractParser
 {
     /** @var Command $command */
     protected $command;

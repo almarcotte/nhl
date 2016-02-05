@@ -1,8 +1,8 @@
 <?php
 
-use NHL\Contracts\Parser;
+use NHL\Contracts\AbstractParser;
 use NHL\Events\Types;
-use NHL\Parsers\PlayByPlay;
+use NHL\Parsers\PlayByPlayParser;
 
 class ParserTest extends PHPUnit_Framework_TestCase
 {
@@ -12,7 +12,7 @@ class ParserTest extends PHPUnit_Framework_TestCase
     /** @var \NHL\Command $command */
     public static $command;
 
-    /** @var Parser $parser */
+    /** @var AbstractParser $parser */
     public $parser;
 
     /**
@@ -26,7 +26,7 @@ class ParserTest extends PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->parser = new PlayByPlay(self::$command);
+        $this->parser = new PlayByPlayParser(self::$command);
     }
 
     public function testParseShot()

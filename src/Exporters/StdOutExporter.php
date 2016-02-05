@@ -2,7 +2,7 @@
 
 namespace NHL\Exporters;
 
-use NHL\Contracts\Exporter;
+use NHL\Contracts\AbstractExporter;
 use NHL\Contracts\VerboseOutput;
 use NHL\Entities\Game;
 use NHL\Exceptions\ExporterException;
@@ -14,7 +14,7 @@ use NHL\Exceptions\ExporterException;
  *
  * @package NHL\Exporters
  */
-class StdOut extends Void implements Exporter
+class StdOutExporter extends AbstractExporter
 {
     use VerboseOutput;
 

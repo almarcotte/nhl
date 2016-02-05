@@ -3,12 +3,12 @@
 namespace NHL\Factories;
 
 use NHL\Command;
-use NHL\Contracts\Exporter;
-use NHL\Exporters\CSV;
-use NHL\Exporters\File;
-use NHL\Exporters\MySQL;
-use NHL\Exporters\StdOut;
-use NHL\Exporters\Void;
+use NHL\Contracts\AbstractExporter;
+use NHL\Exporters\CSVExporter;
+use NHL\Exporters\FileExporter;
+use NHL\Exporters\MySQLExporter;
+use NHL\Exporters\StdOutExporter;
+use NHL\Exporters\VoidExporter;
 
 /**
  * Class ExporterFactory
@@ -21,27 +21,27 @@ class ExporterFactory
      * @param string  $exporter
      * @param Command $command
      *
-     * @return Exporter
+     * @return AbstractExporter
      */
     public static function make($exporter, Command $command)
     {
         switch ($exporter) {
             case 'csv':
-                $obj = new CSV();
+                $obj = new CSVExporter();
                 break;
             case 'file':
-                $obj = new File();
+                $obj = new FileExporter();
                 break;
             case 'mysql':
-                $obj = new MySQL();
+                $obj = new MySQLExporter();
                 break;
             case 'void':
-                $obj = new Void();
+                $obj = new VoidExporter();
                 break;
             case 'stdout':
             default:
                 $exporter = 'stdout';
-                $obj = new StdOut();
+                $obj = new StdOutExporter();
         }
 
         if (method_exists($obj, 'setOptions')) {

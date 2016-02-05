@@ -130,4 +130,12 @@ class Game
     {
         $this->season = $season;
     }
+
+    /**
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->away . "(".$this->awayScore.") at " . $this->home . "(".$this->homeScore.")";
+    }
 }

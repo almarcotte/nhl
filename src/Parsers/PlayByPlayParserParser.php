@@ -6,7 +6,7 @@ use NHL\Entities\Game;
 use NHL\Entities\Team;
 use NHL\Event;
 use NHL\Events\Types;
-use NHL\Contracts\Parser;
+use NHL\Contracts\AbstractParser;
 use NHL\Exceptions\ParserException;
 use PHPHtmlParser\Dom;
 use PHPHtmlParser\Dom\AbstractNode;
@@ -14,9 +14,11 @@ use PHPHtmlParser\Dom\AbstractNode;
 /**
  * Class PlayByPlay
  *
+ * Parser for play by play (PL) files
+ *
  * @package NHL\Parsers
  */
-class PlayByPlay extends Parser
+class PlayByPlayParser extends AbstractParser
 {
     protected $filePattern = "/PL.+\\.HTM/";
 
