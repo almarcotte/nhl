@@ -18,6 +18,9 @@ class Player
     /** @var Team $team */
     public $team;
 
+    /** @var string $position */
+    public $position = null;
+
     /**
      * Reusable regex to parse a player in the TEAM #NO NAME format
      */
